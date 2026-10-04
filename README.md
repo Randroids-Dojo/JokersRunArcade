@@ -4,6 +4,8 @@ An arcade flight combat demo for the browser. You launch off a retreating carrie
 
 Three.js + TypeScript + Vite. All models, terrain, ocean, sky, effects, music, and sound are procedural. There are no asset files.
 
+**[Play it](https://jokers-run-arcade.vercel.app)**
+
 ## Run
 
 ```sh
@@ -14,6 +16,10 @@ npm run preview    # serve dist/ on :5190
 ```
 
 Click **LAUNCH** or press Enter. Audio starts on the first key press or click.
+
+## Deployment
+
+[Randroids-Dojo/JokersRunArcade](https://github.com/Randroids-Dojo/JokersRunArcade) is connected to the `jokers-run-arcade` Vercel project in `randroid88s-projects` through the native GitHub integration. Pushing to `main` deploys production at **https://jokers-run-arcade.vercel.app**; other branches get preview deployments. `vercel.json` sets the Vite preset, `npm ci`, and `npm run build` (type check, then bundle) with `dist/` as output, so a type error stops the deploy. No secrets or environment variables are needed.
 
 ## Controls
 
