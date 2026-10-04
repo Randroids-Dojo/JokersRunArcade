@@ -14,6 +14,9 @@ function syncToggles() {
     music: ['music', false],
     reducedMotion: ['reducedMotion', false],
     mute: ['mute', true],
+    assist: ['assist', false],
+    tilt: ['tilt', false],
+    haptics: ['haptics', false],
   };
   document.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((b) => {
     const [key, inverted] = labels[b.dataset.toggle!];
@@ -24,14 +27,41 @@ function syncToggles() {
 }
 
 document.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((b) => {
-  b.addEventListener('click', (e) => {
+  b.addEventListener('click', async (e) => {
     e.stopPropagation();
-    game.toggleSetting(b.dataset.toggle as keyof Settings);
-    syncToggles();
     b.blur();
+    const key = b.dataset.toggle as keyof Settings;
+    game.toggleSetting(key);
+    if (key === 'tilt') {
+      if (game.settings.tilt) {
+        // iOS asks for motion permission here, inside the tap.
+        const ok = await game.touch.tilt.enable();
+        if (!ok) {
+          game.toggleSetting('tilt');
+          const bold = b.querySelector('b');
+          if (bold) bold.textContent = 'UNAVAILABLE';
+          return;
+        }
+      } else game.touch.tilt.disable();
+    }
+    syncToggles();
   });
 });
 syncToggles();
+
+// Tilt stays on between visits; Android resumes immediately, iOS on the next tap.
+if (game.settings.tilt) {
+  const resume = () => {
+    void game.touch.tilt.enable().then((ok) => {
+      if (!ok && game.settings.tilt) {
+        game.toggleSetting('tilt');
+        syncToggles();
+      }
+    });
+    window.removeEventListener('pointerdown', resume);
+  };
+  window.addEventListener('pointerdown', resume);
+}
 
 document.getElementById('btn-launch')!.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -84,6 +114,23 @@ if (params.has('debug')) {
       for (const a of [...game.aircraft]) if (a.team === 'red' && a.alive && !a.hidden && !a.frozen && (!kind || a.kind === kind)) game.kill(a, 'gun', true);
     },
     events: () => game.events.splice(0),
+    touch: () => ({
+      enabled: game.touch.enabled,
+      stick: [+game.touch.x.toFixed(2), +game.touch.y.toFixed(2)],
+      input: { pitch: +game.input.pitch.toFixed(2), turn: +game.input.turn.toFixed(2), assist: game.input.assist, guns: game.input.guns, boost: game.input.boost, brake: game.input.brake, look: game.input.lookTarget },
+      boosting: game.pc.boosting,
+      latched: game.touch.boostLatched,
+      bank: +((game.pc.bankAngle(game.player) * 180) / Math.PI).toFixed(0),
+      heading: +((Math.atan2(game.player.fwd.x, -game.player.fwd.z) * 180) / Math.PI).toFixed(0),
+      lastRollAt: +game.pc.lastRollAt.toFixed(1),
+      time: +game.time.toFixed(1),
+      shots: game.score.shotsFired,
+      missiles: game.score.missilesFired,
+      target: game.target?.label ?? null,
+      wingOrder: game.wingOrder,
+      state: game.state,
+      renderScale: game.renderScale,
+    }),
     state: () => ({
       state: game.state,
       phase: game.mission.phase,

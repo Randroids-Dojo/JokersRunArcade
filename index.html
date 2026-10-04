@@ -2,7 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#05080c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Joker's Run" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icon-180.png" />
     <title>Joker's Run — Mission 01</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 16 L16 30 L4 16 Z' fill='%23c0282d'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,6 +75,25 @@
         <div id="area-warn" class="hidden">RETURN TO COMBAT AREA</div>
       </div>
 
+      <div id="touch">
+        <div id="t-stick"><div class="ring"><b></b><b></b><b></b><b></b></div><div id="t-knob"></div><span class="t-label">DRAG TO FLY</span></div>
+        <button class="tb" id="t-pause" data-b="pause" tabindex="-1" aria-label="Pause"><i></i><i></i></button>
+        <div id="t-orders">
+          <button class="tchip" data-b="order1" tabindex="-1">COVER ME</button>
+          <button class="tchip" data-b="order2" tabindex="-1">SCOUTS</button>
+          <button class="tchip" data-b="order3" tabindex="-1">SPLIT</button>
+        </div>
+        <div id="t-cluster">
+          <button class="tb" id="t-gun" data-b="gun" tabindex="-1"><span>GUN</span></button>
+          <button class="tb" id="t-msl" data-b="msl" tabindex="-1"><span>MSL</span><em class="pips"><i></i><i></i></em></button>
+          <button class="tb" id="t-boost" data-b="boost" tabindex="-1"><span>BOOST</span></button>
+          <button class="tb" id="t-brake" data-b="brake" tabindex="-1"><span>BRAKE</span></button>
+          <button class="tb" id="t-roll" data-b="roll" tabindex="-1"><span>ROLL</span></button>
+          <button class="tb" id="t-tgt" data-b="tgt" tabindex="-1"><span>TGT</span></button>
+        </div>
+        <div id="t-hint"></div>
+      </div>
+
       <div id="letterbox"><div></div><div></div></div>
 
       <section id="screen-title" class="screen">
@@ -76,7 +102,10 @@
           <h1>JOKER'S<br />RUN</h1>
           <p class="tag">The fleet is running for neutral water. Enemy scouts have found it.<br />Don't let them talk.</p>
           <button id="btn-launch" class="cta">LAUNCH <span>ENTER</span></button>
+          <p class="touch-note touch-only">Left thumb flies: touch and drag anywhere on the left. Right thumb fights. Tap an enemy to target it.</p>
           <div class="toggles">
+            <button data-toggle="assist" class="touch-only">ASSISTED STEERING: <b>ON</b></button>
+            <button data-toggle="tilt" class="touch-only">TILT STEERING: <b>OFF</b></button>
             <button data-toggle="invertPitch">INVERT PITCH: <b>OFF</b></button>
             <button data-toggle="voice">RADIO VOICE: <b>ON</b></button>
             <button data-toggle="music">MUSIC: <b>ON</b></button>
@@ -114,6 +143,9 @@
             <button data-action="title">QUIT TO TITLE</button>
           </div>
           <div class="toggles">
+            <button data-toggle="assist" class="touch-only">ASSISTED STEERING: <b>ON</b></button>
+            <button data-toggle="tilt" class="touch-only">TILT STEERING: <b>OFF</b></button>
+            <button data-toggle="haptics" class="touch-only">HAPTICS: <b>ON</b></button>
             <button data-toggle="invertPitch">INVERT PITCH: <b>OFF</b></button>
             <button data-toggle="voice">RADIO VOICE: <b>ON</b></button>
             <button data-toggle="music">MUSIC: <b>ON</b></button>
@@ -150,6 +182,7 @@
         </div>
       </section>
 
+      <div id="rotate"><div class="phone"><i></i></div><p>Turn your phone sideways</p><span>Joker's Run plays in landscape</span></div>
       <div id="card" class="hidden"><div class="card-kicker">NEXT MISSION</div><div class="card-title">BREAKOUT</div></div>
       <div id="fade"></div>
     </div>

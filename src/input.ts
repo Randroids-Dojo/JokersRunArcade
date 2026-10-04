@@ -1,4 +1,6 @@
-// Keyboard + mouse + gamepad, merged into one control state per frame.
+// Keyboard + mouse + gamepad + touch, merged into one control state per frame.
+
+import type { TouchControls } from './touch';
 
 const PREVENT = new Set([
   'Space',
@@ -20,9 +22,12 @@ export interface ControlState {
   boost: boolean;
   brake: boolean;
   rollTap: number;
+  /** Assisted steering: desired turn (-1..1). The flight model banks and pulls for you. */
+  turn: number;
+  assist: boolean;
 }
 
-export const NEUTRAL: ControlState = { pitch: 0, roll: 0, yaw: 0, boost: false, brake: false, rollTap: 0 };
+export const NEUTRAL: ControlState = { pitch: 0, roll: 0, yaw: 0, boost: false, brake: false, rollTap: 0, turn: 0, assist: false };
 
 export class Input implements ControlState {
   private keys = new Set<string>();
@@ -33,6 +38,12 @@ export class Input implements ControlState {
   private pendingRoll = 0;
   private padPrev: boolean[] = [];
   usingPad = false;
+  touch: TouchControls | null = null;
+  /** Use assisted steering for the touch stick and tilt. */
+  touchAssist = true;
+  turn = 0;
+  assist = false;
+  taps: { x: number; y: number }[] = [];
 
   pitch = 0;
   roll = 0;
@@ -74,17 +85,25 @@ export class Input implements ControlState {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) this.releaseAll();
     });
-    target.addEventListener('mousedown', (e) => {
+    target.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse') return;
       this.mouse.add(e.button);
       this.mousePressed.add(e.button);
     });
-    window.addEventListener('mouseup', (e) => this.mouse.delete(e.button));
+    window.addEventListener('pointerup', (e) => {
+      if (e.pointerType === 'mouse') this.mouse.delete(e.button);
+    });
     target.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
   releaseAll() {
     this.keys.clear();
     this.mouse.clear();
+    this.touch?.releaseAll();
+  }
+
+  get usingTouch() {
+    return !!this.touch?.enabled;
   }
 
   private k(...codes: string[]) {
@@ -143,6 +162,36 @@ export class Input implements ControlState {
       for (let i = 0; i < pad.buttons.length; i++) this.padPrev[i] = btn(i);
     }
 
+    let turn = 0;
+    let assist = false;
+    let taps: { x: number; y: number }[] = [];
+    if (this.touch?.enabled) {
+      const t = this.touch.sample();
+      if (t.steering) {
+        if (this.touchAssist) {
+          assist = true;
+          turn = t.x;
+        } else if (Math.abs(t.x) > Math.abs(roll)) roll = t.x;
+        if (Math.abs(t.y) > Math.abs(pitch)) pitch = t.y;
+      } else if (this.touchAssist && roll === 0 && pitch === 0 && yaw === 0) {
+        // Thumb off the stick in assisted mode: hold wings level and the nose on the horizon.
+        assist = true;
+      }
+      boost ||= t.boost;
+      brake ||= t.brake;
+      guns ||= t.gun;
+      missile ||= t.msl;
+      targetNext ||= t.tgt;
+      if (t.roll) rollTap = t.roll;
+      lookTarget ||= t.look;
+      if (t.order) order = t.order;
+      pause ||= t.pause;
+      skip ||= t.taps.length > 0;
+      taps = t.taps;
+    }
+    this.turn = turn;
+    this.assist = assist;
+    this.taps = taps;
     this.pitch = pitch;
     this.roll = roll;
     this.yaw = yaw;
@@ -169,6 +218,7 @@ export class Input implements ControlState {
     this.targetNext = false;
     this.rollTap = 0;
     this.order = 0;
+    this.taps = [];
   }
 
   pressedKey(code: string) {
