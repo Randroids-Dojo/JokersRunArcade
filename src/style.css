@@ -1031,3 +1031,708 @@ button {
     height: 160px;
   }
 }
+
+/* ================================================================ Touch */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+.touch-only {
+  display: none !important;
+}
+body.touch .touch-only {
+  display: revert !important;
+}
+body.touch .toggles .touch-only {
+  display: inline-block !important;
+}
+
+#touch {
+  position: absolute;
+  inset: 0;
+  display: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  --sl: env(safe-area-inset-left, 0px);
+  --sr: env(safe-area-inset-right, 0px);
+  --sb: env(safe-area-inset-bottom, 0px);
+}
+body.touch #touch.live {
+  display: block;
+}
+#touch.cine #t-cluster,
+#touch.cine #t-stick,
+#touch.cine #t-orders {
+  opacity: 0;
+  pointer-events: none;
+}
+#touch .tb {
+  position: absolute;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(166, 255, 208, 0.6);
+  background: rgba(6, 14, 11, 0.34);
+  color: var(--hud);
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  touch-action: none;
+  outline: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 2px 12px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  transition: transform 0.07s ease-out, background 0.07s, border-color 0.15s, box-shadow 0.15s;
+}
+#touch .tb.down {
+  transform: scale(0.9);
+  background: rgba(166, 255, 208, 0.38);
+  color: #fff;
+}
+#touch .tb.teach {
+  border-color: var(--gold);
+  color: var(--gold);
+  animation: teach 1s ease-in-out infinite;
+}
+@keyframes teach {
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 210, 90, 0.35), 0 0 22px rgba(255, 210, 90, 0.6);
+  }
+}
+
+#t-cluster {
+  position: absolute;
+  right: var(--sr);
+  bottom: var(--sb);
+  width: 312px;
+  height: 214px;
+  transition: opacity 0.3s;
+}
+#t-gun {
+  right: 22px;
+  bottom: 22px;
+  width: 98px;
+  height: 98px;
+  font-size: 15px;
+}
+#t-gun::before {
+  content: '';
+  position: absolute;
+  inset: 26px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.35;
+}
+#t-gun.hot {
+  border-color: #fff;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25), 0 0 20px rgba(255, 255, 255, 0.35);
+}
+#t-msl {
+  right: 138px;
+  bottom: 18px;
+  width: 82px;
+  height: 82px;
+  --lock: 0;
+  --ring: var(--hud);
+}
+#t-msl::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ring) calc(var(--lock) * 360deg), rgba(166, 255, 208, 0.1) 0);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
+  mask: radial-gradient(circle, transparent 60%, #000 61%);
+}
+#t-msl.locked {
+  --ring: var(--hostile);
+  border-color: var(--hostile);
+  color: #fff;
+  background: rgba(120, 10, 4, 0.45);
+}
+#t-msl.ecm {
+  opacity: 0.55;
+}
+#t-msl .pips {
+  display: flex;
+  gap: 4px;
+}
+#t-msl .pips i {
+  display: block;
+  width: 14px;
+  height: 4px;
+  background: linear-gradient(90deg, currentColor var(--f, 100%), rgba(166, 255, 208, 0.2) var(--f, 100%));
+}
+#t-boost {
+  right: 128px;
+  bottom: 116px;
+  width: 66px;
+  height: 66px;
+  overflow: hidden;
+  font-size: 11px;
+  --energy: 1;
+}
+#t-boost::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--energy) * 100%);
+  background: rgba(166, 255, 208, 0.18);
+  z-index: -1;
+}
+#t-boost.on {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 16px rgba(255, 190, 60, 0.45);
+}
+#t-boost.on::after {
+  background: rgba(255, 190, 60, 0.28);
+}
+#t-brake {
+  right: 238px;
+  bottom: 28px;
+  width: 60px;
+  height: 60px;
+  font-size: 11px;
+}
+#t-roll {
+  right: 36px;
+  bottom: 138px;
+  width: 64px;
+  height: 64px;
+  font-size: 11px;
+}
+#t-roll.alert {
+  border-color: var(--hostile);
+  color: #fff;
+  background: rgba(150, 10, 4, 0.5);
+  animation: evade 0.5s ease-in-out infinite;
+}
+@keyframes evade {
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 60, 40, 0.35), 0 0 24px rgba(255, 60, 40, 0.7);
+  }
+}
+#t-tgt {
+  right: 216px;
+  bottom: 132px;
+  width: 54px;
+  height: 54px;
+  font-size: 11px;
+}
+
+#t-stick {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+#t-stick.active {
+  opacity: 1;
+}
+#t-stick .ring {
+  position: absolute;
+  left: -64px;
+  top: -64px;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 2px solid rgba(166, 255, 208, 0.55);
+  background: radial-gradient(circle, rgba(6, 14, 11, 0.12), rgba(6, 14, 11, 0.38));
+}
+#t-stick .ring b {
+  position: absolute;
+  width: 2px;
+  height: 9px;
+  left: calc(50% - 1px);
+  top: 4px;
+  background: rgba(166, 255, 208, 0.7);
+  transform-origin: 1px 60px;
+}
+#t-stick .ring b:nth-child(2) {
+  transform: rotate(90deg);
+}
+#t-stick .ring b:nth-child(3) {
+  transform: rotate(180deg);
+}
+#t-stick .ring b:nth-child(4) {
+  transform: rotate(270deg);
+}
+#t-knob {
+  position: absolute;
+  left: -29px;
+  top: -29px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 2px solid rgba(166, 255, 208, 0.9);
+  background: radial-gradient(circle at 40% 35%, rgba(200, 255, 230, 0.55), rgba(80, 160, 120, 0.35));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+#t-stick .t-label {
+  position: absolute;
+  top: 74px;
+  left: -60px;
+  width: 120px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--hud);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+#t-stick.used .t-label {
+  display: none;
+}
+#t-stick.teach .ring {
+  border-color: var(--gold);
+  animation: teach 1s ease-in-out infinite;
+}
+
+#touch #t-pause {
+  left: calc(var(--sl) + 10px);
+  top: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+#t-pause i {
+  display: block;
+  width: 5px;
+  height: 16px;
+  background: currentColor;
+}
+#t-orders {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 100px;
+  display: none;
+  gap: 6px;
+}
+#t-orders.show {
+  display: flex;
+}
+.tchip {
+  padding: 7px 10px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(99, 201, 255, 0.6);
+  background: rgba(4, 12, 20, 0.45);
+  color: var(--friend);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  touch-action: none;
+  outline: none;
+}
+.tchip.on {
+  background: var(--friend);
+  color: #04121c;
+}
+.tchip.teach {
+  animation: teach 1s ease-in-out infinite;
+}
+#t-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  animation: blink 1.2s steps(2) infinite;
+  pointer-events: none;
+}
+
+kbd.t {
+  border-radius: 12px;
+  border-bottom-width: 1px;
+  padding: 1px 9px;
+  color: var(--gold);
+  border-color: rgba(255, 210, 90, 0.7);
+}
+
+#rotate {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  background: #05080c;
+  color: #fff;
+}
+#rotate p {
+  margin: 18px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.08em;
+}
+#rotate span {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.6);
+}
+#rotate .phone {
+  width: 54px;
+  height: 92px;
+  border: 3px solid var(--gold);
+  border-radius: 10px;
+  position: relative;
+  animation: rotatePhone 2.2s ease-in-out infinite;
+}
+#rotate .phone i {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 14px;
+  height: 3px;
+  margin-left: -7px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+@keyframes rotatePhone {
+  0%,
+  25% {
+    transform: rotate(0deg);
+  }
+  55%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+@media (orientation: portrait) {
+  body.touch #rotate {
+    display: grid;
+  }
+}
+
+/* ---------------------------------------------------------------- Compact HUD for phones */
+body.touch #tl {
+  top: 10px;
+  left: calc(var(--sl, 0px) + env(safe-area-inset-left, 0px) + 62px);
+  min-width: 0;
+}
+body.touch #tl .lbl {
+  font-size: 9px;
+}
+body.touch #score {
+  font-size: 22px;
+}
+body.touch #hotstart {
+  margin-top: 3px;
+  font-size: 11px;
+}
+body.touch #combo {
+  margin-top: 4px;
+  width: 140px;
+}
+body.touch #combo-text {
+  font-size: 13px;
+}
+body.touch #combo-text b {
+  font-size: 17px;
+}
+body.touch #tc {
+  top: 36px;
+  width: 46vw;
+}
+body.touch #objective {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+body.touch #timer {
+  margin-top: 2px;
+}
+body.touch #timer-label {
+  font-size: 9px;
+}
+body.touch #timer-value {
+  font-size: 26px;
+}
+body.touch #subtimer {
+  font-size: 10px;
+}
+body.touch #tr {
+  top: 130px;
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  min-width: 0;
+}
+body.touch #hud:not(.uploads) #scout-list {
+  display: none;
+}
+body.touch #mission-tag,
+body.touch #phase-tag,
+body.touch #wing-order {
+  display: none !important;
+}
+body.touch #scout-list {
+  margin-top: 0;
+  gap: 2px;
+}
+body.touch .scout-row {
+  grid-template-columns: auto 64px 34px;
+  gap: 6px;
+  font-size: 10px;
+}
+body.touch #boss {
+  top: 98px;
+  width: min(250px, 30vw);
+}
+body.touch #boss-head,
+body.touch #boss-status {
+  font-size: 10px;
+}
+body.touch .gauge {
+  top: 40%;
+}
+body.touch #gauge-l {
+  left: calc(50% - 196px);
+}
+body.touch #gauge-r {
+  right: calc(50% - 196px);
+}
+/* The BOOST button shows fuel on touch. */
+body.touch .gauge .bar.v,
+body.touch .gauge .lbl.small {
+  display: none;
+}
+body.touch .gauge b {
+  font-size: 17px;
+  min-width: 58px;
+  padding: 2px 6px;
+}
+body.touch .gauge .bar.v {
+  height: 38px;
+}
+body.touch #bl {
+  left: auto;
+  bottom: auto;
+  top: 8px;
+  right: calc(env(safe-area-inset-right, 0px) + 10px);
+}
+body.touch #radar {
+  width: 116px;
+  height: 116px;
+}
+body.touch #br {
+  top: 10px;
+  bottom: auto;
+  right: calc(env(safe-area-inset-right, 0px) + 136px);
+  width: 128px;
+  font-size: 11px;
+}
+body.touch #br .row:not(.hull) {
+  display: none;
+}
+body.touch #br .row {
+  grid-template-columns: 38px 1fr auto;
+  gap: 5px;
+}
+body.touch #br .hull .bar {
+  height: 5px;
+}
+/* Left column, just above the stick it is usually explaining; keeps the jet and targets clear. */
+body.touch #prompt {
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  right: auto;
+  top: 90px;
+  bottom: auto;
+  transform: none;
+  width: min(214px, 27vw);
+  max-width: none;
+  padding: 7px 11px;
+  text-align: left;
+  border-right: 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+body.touch #prompt .big {
+  font-size: 17px;
+}
+body.touch #prompt .step {
+  font-size: 9px;
+}
+body.touch #radio {
+  left: 30%;
+  right: 37%;
+  transform: none;
+  width: auto;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+  padding: 6px 10px 7px;
+}
+body.touch #radio-who {
+  font-size: 9px;
+}
+body.touch #radio-text {
+  font-size: 13px;
+}
+body.touch #popups {
+  left: calc(50% + 46px);
+  top: 21%;
+}
+body.touch .cta span,
+body.touch .menu button span {
+  display: none;
+}
+body.touch .pop {
+  font-size: 12px;
+}
+body.touch .pop.combo {
+  font-size: 15px;
+}
+body.touch .pop.gold {
+  font-size: 14px;
+}
+body.touch #banner {
+  top: 24%;
+}
+body.touch .bn .main {
+  font-size: clamp(26px, 9vh, 52px);
+}
+body.touch .bn .sub {
+  font-size: 11px;
+  margin-top: 4px;
+}
+body.touch .bn.warning {
+  padding: 8px 0 10px;
+}
+body.touch #countdown {
+  font-size: 76px;
+  top: 52%;
+}
+body.touch #area-warn {
+  font-size: 12px;
+  top: 30%;
+}
+
+/* ---------------------------------------------------------------- Short screens (phones in landscape) */
+@media (max-height: 560px) {
+  #screen-title {
+    padding: 4vh 5vw;
+    grid-template-columns: 1fr;
+  }
+  .title-wrap h1 {
+    font-size: clamp(44px, 17vh, 120px);
+    margin-top: 4px;
+  }
+  .kicker {
+    font-size: 11px;
+  }
+  .tag {
+    margin-top: 10px;
+    font-size: 13px;
+    max-width: 480px;
+  }
+  .cta {
+    margin-top: 12px;
+    padding: 10px 22px;
+    font-size: 17px;
+  }
+  .toggles {
+    margin-top: 10px;
+    gap: 6px;
+  }
+  .toggles button {
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+  .best {
+    margin-top: 8px;
+    font-size: 11px;
+  }
+  .touch-note {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 520px;
+  }
+  .panel {
+    min-width: 0;
+    width: min(560px, 92vw);
+    max-height: 94vh;
+    overflow-y: auto;
+    padding: 14px 20px;
+  }
+  .panel h2 {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .menu {
+    gap: 6px;
+  }
+  .menu button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .panel .toggles {
+    margin-top: 10px;
+  }
+  #screen-debrief {
+    overflow-y: auto;
+    place-items: start center;
+    padding: 4vh 0;
+  }
+  .debrief h2 {
+    font-size: 30px;
+    margin-bottom: 8px;
+  }
+  .deb-grid {
+    grid-template-columns: 96px 1fr;
+    gap: 16px;
+  }
+  #deb-stats {
+    grid-template-columns: auto auto auto auto;
+    column-gap: 18px;
+  }
+  .debrief .menu {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rank-box b {
+    font-size: 64px;
+  }
+  #deb-stats {
+    font-size: 12px;
+    gap: 2px 14px;
+  }
+  #deb-stats dt.total,
+  #deb-stats dd.total {
+    font-size: 16px;
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  .next {
+    margin: 12px 0 10px;
+    padding: 8px 12px;
+  }
+  .next b {
+    font-size: 16px;
+  }
+  .card-title {
+    font-size: clamp(48px, 20vh, 120px);
+  }
+}

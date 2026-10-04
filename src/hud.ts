@@ -241,7 +241,10 @@ export class Hud {
     }
   }
 
+  wingOrderShown: string | null = null;
+
   wingOrder(order: string | null) {
+    this.wingOrderShown = order;
     if (!order) {
       this.show('wing-order', false);
       return;
@@ -357,6 +360,7 @@ export class Hud {
     const sink = -p.vel.y;
     this.show('pullup', g.controlsEnabled && p.pos.y - gh < 260 && sink > 0 && (p.pos.y - gh) / sink < 3.2);
     this.show('area-warn', g.outOfArea && g.controlsEnabled);
+    this.root.classList.toggle('uploads', g.uploadsActive);
     // Fades for overlays.
     this.radarRange += (this.radarRangeTarget - this.radarRange) * Math.min(1, dt * 3);
     this.pingT += dt;
@@ -498,9 +502,10 @@ export class Hud {
         ctx.fillStyle = C.hostile;
         ctx.textAlign = 'center';
         const close = incoming.some((m) => m.pos.distanceTo(p.pos) < 700);
-        ctx.fillText(close ? 'MISSILE — BREAK!' : 'MISSILE', W / 2, H / 2 - 160);
+        const short = H < 520;
+        ctx.fillText(close ? 'MISSILE — BREAK!' : 'MISSILE', W / 2, short ? H * 0.42 : H / 2 - 160);
         ctx.font = '600 12px "Chakra Petch", sans-serif';
-        if (close) ctx.fillText('BARREL ROLL: DOUBLE-TAP A / D', W / 2, H / 2 - 138);
+        if (close && !g.input.usingTouch) ctx.fillText('BARREL ROLL: DOUBLE-TAP A / D', W / 2, short ? H * 0.42 + 22 : H / 2 - 138);
         ctx.textAlign = 'left';
       }
     }

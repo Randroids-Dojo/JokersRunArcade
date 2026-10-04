@@ -39,6 +39,25 @@ Click **LAUNCH** or press Enter. Audio starts on the first key press or click.
 | Esc / P | Pause (settings, restart checkpoint) |
 | M | Mute |
 
+### Phones and tablets
+
+Touch controls appear automatically on touch devices. Play in landscape; the game pauses and asks you to rotate in portrait. Launching goes fullscreen and locks landscape where the browser allows it (Android). On iPhone, **Share → Add to Home Screen** gives the same fullscreen, landscape app.
+
+| Touch | Action |
+| --- | --- |
+| Left thumb, anywhere on the left half | Floating flight stick. It appears under your thumb and follows if you drift past the rim |
+| Assisted steering (default) | Push the stick where you want to go: sideways banks and turns for you, up/down sets a climb or dive angle, let go to fly level. Turn it off in Settings for direct roll/pitch with full aerobatics |
+| GUN (hold) | Guns. The button lights up when your lead is on target |
+| MSL (tap) | Missile. The ring fills as the lock builds and turns red when locked; the pips show both rails reloading |
+| BOOST | Tap to latch the afterburner (tap again, brake, or an empty tank cancels it); press and hold for a momentary burst. The button shows remaining fuel |
+| BRAKE (hold) | Slow down and turn tighter |
+| ROLL / EVADE | Barrel roll. It turns red and reads EVADE when a missile is closing |
+| TGT | Tap for the next target, hold to look at it. You can also tap any enemy on screen to target it |
+| Blue buttons | Wingman orders while the scouts are up |
+| ❚❚ | Pause |
+
+Settings (title or pause): assisted steering, tilt steering (turn the phone like a wheel; pull the top edge toward you to climb; it calibrates to how you hold it when the mission starts), haptics, invert pitch. The tutorial highlights the control each step asks for. Render resolution adapts to hold the frame rate.
+
 Gamepad (standard mapping): left stick flies, LB/RB rudder, RT boost, LT brake, X guns, A missile, B roll, Y target, D-pad wingman orders, Start pause.
 
 ## Mission flow
@@ -81,6 +100,7 @@ Scoring: MISSILE KILL +1,000 · GUN KILL +1,500 · CLOSE RANGE +500 · NO DAMAGE
 npm run dev                                   # in one terminal
 node scripts/playtest.mjs launch 2 300        # full bot run at 2x, screenshots to artifacts/
 GOD=1 node scripts/playtest.mjs ace 1 120     # one phase, invulnerable
+node scripts/mobile.mjs                       # phone emulation, real multi-touch, 28 checks
 ```
 
 The scripts drive the installed Google Chrome through `playwright-core`.
@@ -89,4 +109,5 @@ The scripts drive the installed Google Chrome through `playwright-core`.
 
 - Difficulty was tuned against the bot, which aims perfectly and flies poorly. It clears the mission in about 2.5 minutes of game time. The 8–10 minute target for a human first run is an estimate, not measured.
 - Sound and the spoken radio (browser speech synthesis; quality depends on the system voices) were not judged by ear. Radio text always appears on screen.
-- No touch controls. The fonts load from Google Fonts with a system fallback.
+- Touch controls were verified in Chrome's phone emulation with real multi-touch events, not on a physical phone. Tilt steering was checked with synthetic orientation events against the W3C angle conventions; the feel on real hardware, iOS Safari behaviour, and haptics (Android only; iOS Safari has no vibration API) still need a device.
+- The fonts load from Google Fonts with a system fallback.

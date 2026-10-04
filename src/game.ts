@@ -15,6 +15,7 @@ import { buildAircraft, ModelKind } from './models';
 import { PlayerController } from './player';
 import { Score } from './score';
 import { Terrain } from './terrain';
+import { TouchControls } from './touch';
 import { MissileSpec, Weapons, Bullet, Missile } from './weapons';
 
 export type GameState = 'title' | 'play' | 'paused' | 'failed' | 'clear' | 'debrief';
@@ -26,6 +27,10 @@ export interface Settings {
   music: boolean;
   reducedMotion: boolean;
   mute: boolean;
+  /** Touch: assisted steering (stick asks for a turn, the jet banks and pulls). */
+  assist: boolean;
+  tilt: boolean;
+  haptics: boolean;
 }
 
 const PLAYER_MISSILE: MissileSpec = {
@@ -57,6 +62,18 @@ export class Game {
   readonly fx: Effects;
   readonly weapons: Weapons;
   readonly input: Input;
+  readonly touch: TouchControls;
+  /** Touch UI: which control the tutorial is teaching right now. */
+  touchTeach: string | null = null;
+  /** A cinematic that a tap can skip is waiting. */
+  skippable = false;
+  private dpr = 1;
+  private dprMax = 1.75;
+  private perfLast = performance.now();
+  private perfAcc = 0;
+  private perfN = 0;
+  private perfGood = 0;
+  private perfHoldUntil = 0;
   readonly audio = new AudioEngine();
   readonly hud = new Hud();
   readonly score = new Score();
@@ -115,7 +132,10 @@ export class Game {
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+    this.dprMax = Math.min(window.devicePixelRatio, coarse ? 1.5 : 1.75);
+    this.dpr = this.dprMax;
+    this.renderer.setPixelRatio(this.dpr);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -127,10 +147,15 @@ export class Game {
     this.fx.groundAt = (x, z) => this.terrain.ground(x, z);
     this.weapons = new Weapons(this.scene);
     this.input = new Input(canvas);
+    this.touch = new TouchControls();
+    this.input.touch = this.touch;
+    this.touch.onEnable = () => requestAnimationFrame(() => this.resize());
     this.settings = loadSettings();
     this.audio.voiceOn = this.settings.voice;
     this.audio.muted = this.settings.mute;
     this.rig.reducedMotion = this.settings.reducedMotion;
+    this.input.touchAssist = this.settings.assist;
+    this.touch.haptics = this.settings.haptics;
     this.player = this.makePlayer();
     this.mission = new Mission(this);
     this.hud.onRadio = (who, text) => {
@@ -145,6 +170,7 @@ export class Game {
   resize() {
     const w = window.innerWidth;
     const h = window.innerHeight;
+    this.renderer.setPixelRatio(this.dpr);
     this.renderer.setSize(w, h, false);
     this.rig.camera.aspect = w / h;
     this.rig.camera.updateProjectionMatrix();
@@ -326,6 +352,8 @@ export class Game {
   }
 
   startMission(cp: CheckpointName = 'launch') {
+    if (this.touch.enabled) this.enterFullscreen();
+    this.touch.tilt.recalibrate();
     this.audio.init();
     this.applyAudioSettings();
     this.showScreen(null);
@@ -482,6 +510,8 @@ export class Game {
     this.audio.setMuted(this.settings.mute);
     this.audio.setMusicVolume(this.settings.music ? 0.5 : 0);
     this.rig.reducedMotion = this.settings.reducedMotion;
+    this.input.touchAssist = this.settings.assist;
+    this.touch.haptics = this.settings.haptics;
   }
 
   toggleSetting(key: keyof Settings) {
@@ -495,6 +525,11 @@ export class Game {
   tick(rawDt: number) {
     this.realTime += rawDt;
     const inp = this.input;
+    // Phones: rotating to portrait mid-flight pauses rather than flying blind.
+    if (this.touch.enabled && this.state === 'play' && window.innerHeight > window.innerWidth) this.pause();
+    if (inp.taps.length && this.state === 'play' && this.controlsEnabled) {
+      for (const t of inp.taps) this.pickTargetAt(t.x, t.y);
+    }
     if (this.state === 'title' && inp.confirm) this.startMission();
     else if (this.state === 'play' && inp.pause) this.pause();
     else if (this.state === 'paused' && inp.pause) this.resume();
@@ -547,6 +582,7 @@ export class Game {
     const inp: ControlState = this.controlsEnabled ? this.input : NEUTRAL;
     if (p.alive) {
       this.pc.update(p, inp, this, dt);
+      if (this.touch.boostLatched && (this.pc.boostEnergy <= 0.01 || this.input.brake || !this.controlsEnabled)) this.touch.unlatchBoost();
       if (this.time - p.lastHitTime > PLAYER.regenDelay && p.hp < p.maxHp) p.hp = Math.min(p.maxHp, p.hp + PLAYER.regenRate * dt);
       if (this.controlsEnabled) this.playerWeapons(dt);
     } else if (p.wreck) this.updateWreck(p, dt);
@@ -638,6 +674,7 @@ export class Game {
           this.railIdx = 1 - idx;
           this.audio.missileLaunch(0.5);
           this.score.missilesFired++;
+          this.touch.vibrate(12);
           this.logEvent(`player missile ${tgt ? 'at ' + tgt.label : 'dumbfire'}`);
         }
       } else this.audio.tone(260, 0.05, 'square', 0.05);
@@ -689,7 +726,37 @@ export class Game {
     }
     const lockTime = MISSILE.lockTime * (1 + Math.max(0, (p.speed - 260) / 150)) * this.lockPenalty;
     this.lockProgress = inCone ? Math.min(1, this.lockProgress + dt / lockTime) : Math.max(0, this.lockProgress - dt * 3);
+    const was = this.locked;
     this.locked = this.lockProgress >= 1;
+    if (this.locked && !was) this.touch.vibrate(8);
+  }
+
+  /** Touch: select the enemy nearest a tap on screen. */
+  pickTargetAt(x: number, y: number): boolean {
+    const cam = this.rig.camera;
+    let best: Aircraft | null = null;
+    let bd = 72 * 72;
+    for (const a of this.aircraft) {
+      if (a.team !== 'red' || !a.targetable) continue;
+      _v.copy(a.pos).applyMatrix4(cam.matrixWorldInverse);
+      if (_v.z > 0) continue;
+      _v.copy(a.pos).project(cam);
+      const sx = (_v.x * 0.5 + 0.5) * window.innerWidth;
+      const sy = (-_v.y * 0.5 + 0.5) * window.innerHeight;
+      const d2 = (sx - x) ** 2 + (sy - y) ** 2;
+      if (d2 < bd) {
+        bd = d2;
+        best = a;
+      }
+    }
+    if (!best) return false;
+    if (best !== this.target) {
+      this.target = best;
+      this.lockProgress = 0;
+      this.audio.tone(1900, 0.04, 'square', 0.05);
+      this.touch.vibrate(6);
+    }
+    return true;
   }
 
   // ---------------------------------------------------------------- Combat events
@@ -763,6 +830,7 @@ export class Game {
     p.lastHitTime = this.time;
     this.score.damaged(amount);
     this.audio.playerHit(weapon === 'missile');
+    this.touch.vibrate(weapon === 'missile' ? [70, 40, 90] : 18);
     this.rig.addTrauma(weapon === 'missile' ? 0.75 : 0.16);
     this.vignette = Math.max(this.vignette, weapon === 'missile' ? 1 : 0.4);
     this.fx.hitSparks(_v.copy(p.pos).addScaledVector(p.right, rand(-4, 4)), p.vel, weapon === 'missile');
@@ -813,6 +881,7 @@ export class Game {
       const lines = this.score.kill({ weapon, dist: a.lastHitDist || d, base, label });
       this.hud.popup(lines);
       this.audio.comboTick(this.score.combo);
+      this.touch.vibrate(a.kind === 'scout' || a.kind === 'ace' ? [30, 30, 60] : 22);
     }
     if (a.kind === 'ace') this.mission.onAceKilled();
     this.mission.onKill(a, byPlayer, weapon);
@@ -988,12 +1057,95 @@ export class Game {
     const incoming = this.controlsEnabled ? this.weapons.incomingMissiles(p) : [];
     const close = incoming.some((m) => m.pos.distanceTo(p.pos) < 900);
     this.audio.setMissileAlert(incoming.length ? (close ? 2 : 1) : 0, this.realTime);
+    this.updateTouchUi();
+    this.adaptResolution();
     this.renderer.render(this.scene, cam);
+  }
+
+  private updateTouchUi() {
+    const t = this.touch;
+    if (!t.enabled) return;
+    const p = this.player;
+    const tg = this.target && this.target.targetable ? this.target : null;
+    let gunHot = false;
+    if (tg && p.alive) {
+      const d = tg.pos.distanceTo(p.pos);
+      if (d < 1300) {
+        _v2.copy(tg.pos).addScaledVector(tg.vel, d / (GUN.speed + p.speed)).sub(p.pos).normalize();
+        gunHot = p.fwd.angleTo(_v2) < 0.035;
+      }
+    }
+    const incoming = this.weapons.incomingMissiles(p).some((m) => m.pos.distanceTo(p.pos) < 1300);
+    t.render({
+      live: this.state === 'play',
+      controls: this.controlsEnabled && !this.cinematic,
+      lock: tg && !tg.ecm ? this.lockProgress : 0,
+      locked: this.locked && !!tg && !tg.ecm,
+      ecm: !!tg?.ecm,
+      rails: [this.railFill(0), this.railFill(1)],
+      boost: this.pc.boostEnergy,
+      boosting: this.pc.boosting,
+      gunHot,
+      evade: incoming && this.controlsEnabled,
+      orders: !this.formation && this.hud.wingOrderShown ? this.wingOrder : null,
+      teach: this.touchTeach,
+      hint: this.skippable && this.state === 'play' ? 'TAP TO LAUNCH' : '',
+    });
+  }
+
+  private railFill(i: number) {
+    return this.missileRails[i] <= 0 ? 1 : 1 - this.missileRails[i] / MISSILE.reload;
+  }
+
+  private enterFullscreen() {
+    const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+    if (document.fullscreenElement) return;
+    try {
+      const req = el.requestFullscreen ? el.requestFullscreen({ navigationUI: 'hide' }) : (el.webkitRequestFullscreen?.(), undefined);
+      const lock = () => {
+        const o = screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> };
+        o?.lock?.('landscape').catch(() => {});
+      };
+      if (req) req.then(lock).catch(() => {});
+      else lock();
+    } catch {
+      /* fullscreen is best-effort (iPhone Safari has none) */
+    }
+  }
+
+  /** Hold frame rate by trading render resolution, mainly for phones. */
+  private adaptResolution() {
+    const now = performance.now();
+    const dt = now - this.perfLast;
+    this.perfLast = now;
+    if (this.state === 'paused' || this.state === 'debrief' || dt > 250) return;
+    this.perfAcc += dt;
+    this.perfN++;
+    if (this.perfAcc < 2000) return;
+    const fps = (1000 * this.perfN) / this.perfAcc;
+    this.perfAcc = 0;
+    this.perfN = 0;
+    if (fps < 48 && this.dpr > 0.7) {
+      this.dpr = Math.max(0.7, this.dpr * 0.85);
+      this.perfHoldUntil = now + 20000;
+      this.perfGood = 0;
+      this.resize();
+    } else if (fps > 57 && this.dpr < this.dprMax && now > this.perfHoldUntil) {
+      if (++this.perfGood >= 3) {
+        this.dpr = Math.min(this.dprMax, this.dpr * 1.12);
+        this.perfGood = 0;
+        this.resize();
+      }
+    } else this.perfGood = 0;
+  }
+
+  get renderScale() {
+    return this.dpr;
   }
 }
 
 function loadSettings(): Settings {
-  const def: Settings = { invertPitch: false, voice: true, music: true, reducedMotion: false, mute: false };
+  const def: Settings = { invertPitch: false, voice: true, music: true, reducedMotion: false, mute: false, assist: true, tilt: false, haptics: true };
   try {
     const raw = localStorage.getItem('jokersrun.settings');
     if (raw) return { ...def, ...JSON.parse(raw) };

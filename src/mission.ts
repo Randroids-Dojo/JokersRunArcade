@@ -128,6 +128,19 @@ export class Mission {
   private key(k: 'pitchUp' | 'left' | 'boost' | 'brake' | 'roll' | 'missile' | 'guns' | 'target'): string {
     const pad = this.g.input.usingPad;
     const inv = this.g.settings.invertPitch;
+    if (this.g.input.usingTouch) {
+      const t: Record<string, string> = {
+        pitchUp: inv ? 'STICK ↓' : 'STICK ↑',
+        left: 'STICK ←',
+        boost: 'BOOST',
+        brake: 'BRAKE',
+        roll: 'ROLL',
+        missile: 'MSL',
+        guns: 'GUN',
+        target: 'TGT',
+      };
+      return `<kbd class="t">${t[k]}</kbd>`;
+    }
     const map: Record<string, string> = pad
       ? { pitchUp: inv ? 'L-STICK ↑' : 'L-STICK ↓', left: 'L-STICK ←', boost: 'RT', brake: 'LT', roll: 'B', missile: 'A', guns: 'X', target: 'Y' }
       : { pitchUp: inv ? 'S' : 'W', left: 'A', boost: 'SHIFT', brake: 'X', roll: 'A A', missile: 'F', guns: 'SPACE', target: 'TAB' };
@@ -191,6 +204,8 @@ export class Mission {
     g.hud.clearRadio();
     g.hud.setRadarRange(4500);
     g.hud.setVisible(true);
+    g.touchTeach = null;
+    g.skippable = false;
     g.setCinematic(false);
     g.rig.play(null);
     this.finalTimer = -1;
@@ -313,7 +328,9 @@ export class Mission {
     const t0 = this.clock;
     await this.sleep(0.9);
     this.radio('HALCYON', "We're almost safe. Keep the skies clear until we reach the coast.");
+    g.skippable = true;
     await this.until(() => this.clock - t0 > 4.6 || g.input.skip);
+    g.skippable = false;
     g.hud.bannerNow('LAUNCH', 'JOKER 1 CLEARED', 'gold', 1.6);
     g.audio.catapult();
     await this.sleep(0.35);
@@ -372,6 +389,7 @@ export class Mission {
     }
     this.tutorialRunning = false;
     g.hud.prompt(null);
+    g.touchTeach = null;
     g.hud.timer(null);
     g.hud.subtimer('');
     const t = this.tutorialClock;
@@ -391,13 +409,23 @@ export class Mission {
   private ringPrompt(i: number) {
     const k = (x: Parameters<Mission['key']>[0]) => this.key(x);
     const step = `<span class="step">CHECKPOINT ${i + 1} / 5</span>`;
+    const touch = this.g.input.usingTouch;
+    const assisted = touch && this.g.settings.assist;
     const lines: Record<Ring['kind'], string> = {
       climb: `${step}<span class="big">CLIMB</span>Pull the nose up with ${k('pitchUp')}`,
-      bank: `${step}<span class="big">BANK LEFT</span>Roll left ${k('left')} then pull ${k('pitchUp')} to carve the turn`,
-      boost: `${step}<span class="big">BOOST</span>Hold ${k('boost')} — pass through while boosting`,
+      bank: assisted
+        ? `${step}<span class="big">BANK LEFT</span>Hold ${k('left')} and the jet banks and turns for you`
+        : `${step}<span class="big">BANK LEFT</span>Roll left ${k('left')} then pull ${k('pitchUp')} to carve the turn`,
+      boost: touch
+        ? `${step}<span class="big">BOOST</span>Tap ${k('boost')} to light the afterburner, tap again to cancel`
+        : `${step}<span class="big">BOOST</span>Hold ${k('boost')} — pass through while boosting`,
       brake: `${step}<span class="big">BRAKE</span>Hold ${k('brake')} — slow below 630 km/h and turn tight`,
-      roll: `${step}<span class="big">ROLL</span>Double-tap ${this.g.input.usingPad ? '' : '<kbd>A</kbd> or <kbd>D</kbd>'}${this.g.input.usingPad ? k('roll') : ''} to barrel roll through`,
+      roll: touch
+        ? `${step}<span class="big">ROLL</span>Tap ${k('roll')} to barrel roll through`
+        : `${step}<span class="big">ROLL</span>Double-tap ${this.g.input.usingPad ? '' : '<kbd>A</kbd> or <kbd>D</kbd>'}${this.g.input.usingPad ? k('roll') : ''} to barrel roll through`,
     };
+    const teach: Record<Ring['kind'], string> = { climb: 'stick', bank: 'stick', boost: 'boost', brake: 'brake', roll: 'roll' };
+    this.g.touchTeach = teach[this.rings[i].kind];
     this.g.hud.prompt(lines[this.rings[i].kind]);
   }
 
@@ -526,6 +554,7 @@ export class Mission {
       const d = g.spawnDrone(pos, heading, modes[i], alt);
       g.target = d;
       g.audio.radioBlip();
+      g.touchTeach = ['msl', 'gun', 'brake'][i];
       if (i === 0) g.hud.prompt(`<span class="big">LOCK ON</span>Keep the drone inside the dashed circle until the diamond turns red, then fire ${this.key('missile')}`);
       if (i === 1) {
         g.hud.prompt(`<span class="big">GUNS ONLY</span>This drone jams missiles. Close in, line the gun cross up with the lead circle, fire ${this.key('guns')}`);
@@ -540,6 +569,7 @@ export class Mission {
       await this.sleep(1.4);
     }
     g.hud.prompt(null);
+    g.touchTeach = null;
     g.hud.banner(`COMBO x${Math.max(3, g.score.combo)}`, '', 'combo', 1.6);
     g.hud.banner('TRAINING COMPLETE', '', 'gold', 2.2);
     await this.sleep(1.2);
@@ -617,9 +647,15 @@ export class Mission {
     this.dataTimer = 90;
     g.hud.banner('STOP THE SCOUTS', 'DATA TRANSMISSION 01:30', 'info', 2.6);
     this.radio('JOKER 3', 'Recon planes, three of them. Escorts too.');
-    g.hud.prompt(`Scouts are uploading the fleet's position. Damage interrupts them. Escort kills buy time.<br>Wingmen: <kbd>1</kbd> cover me · <kbd>2</kbd> attack scouts · <kbd>3</kbd> split`);
+    g.hud.prompt(
+      g.input.usingTouch
+        ? `Scouts are uploading the fleet's position. Damage jams them; escort kills buy time.<br>Order your wingmen with the blue buttons.`
+        : `Scouts are uploading the fleet's position. Damage interrupts them. Escort kills buy time.<br>Wingmen: <kbd>1</kbd> cover me · <kbd>2</kbd> attack scouts · <kbd>3</kbd> split`,
+    );
+    g.touchTeach = 'orders';
     await this.sleep(6.5);
     g.hud.prompt(null);
+    g.touchTeach = null;
     // Phase 4: fighters dive on the player.
     this.phase = 'PHASE 4 · DOGFIGHT';
     g.hud.phase(this.phase);
@@ -833,9 +869,13 @@ export class Mission {
     this.radio('JOKER 3', "We'll keep the rest busy. Go!");
     g.hud.prompt(`Missiles struggle at high speed and in the canyon.<br>Boost ${this.key('boost')} to close, then finish it with guns ${this.key('guns')}.`);
     let promptT = 7;
+    g.touchTeach = 'gun';
     this.perFrame = (dt) => {
       promptT -= dt;
-      if (promptT <= 0) g.hud.prompt(null);
+      if (promptT <= 0) {
+        g.hud.prompt(null);
+        g.touchTeach = null;
+      }
       const remain = Math.max(0, WORLD.boundaryX - lead.pos.x);
       g.hud.subtimer(`LEAD SCOUT → BOUNDARY  ${(remain / 1000).toFixed(1)} KM`);
     };

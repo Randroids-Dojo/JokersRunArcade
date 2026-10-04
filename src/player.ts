@@ -52,9 +52,26 @@ export class PlayerController {
       return;
     }
     const s = g.settings;
-    const pitchIn = input.pitch * (s.invertPitch ? -1 : 1);
+    let pitchIn = input.pitch * (s.invertPitch ? -1 : 1);
+    let rollIn = input.roll;
+    if (input.assist) {
+      // Assisted steering: the stick points where you want to go. Sideways asks for a banked
+      // turn (we choose the bank and pull), up/down asks for a climb or dive angle, and a
+      // centred stick holds level flight. No accidental loops.
+      const fullBank = Math.atan2(-a.right.y, a.up.y);
+      const target = clamp(input.turn, -1, 1) * 1.22;
+      let err = target - fullBank;
+      while (err > Math.PI) err -= Math.PI * 2;
+      while (err < -Math.PI) err += Math.PI * 2;
+      rollIn = clamp(err * 2.2, -1, 1);
+      const pull = a.up.y > 0.1 ? Math.abs(input.turn) * 0.8 * Math.max(0, Math.cos(err)) : 0;
+      const nose = Math.asin(clamp(a.fwd.y, -1, 1));
+      const wantNose = clamp(input.pitch * (s.invertPitch ? -1 : 1), -1, 1) * 1.15;
+      const elev = clamp((wantNose - nose) * 3, -1, 1) / Math.max(Math.cos(fullBank), 0.35);
+      pitchIn = clamp(pull + elev, -1, 1);
+    }
     this.pitchCmd = damp(this.pitchCmd, pitchIn, 9, dt);
-    this.rollCmd = damp(this.rollCmd, input.roll, 12, dt);
+    this.rollCmd = damp(this.rollCmd, rollIn, 12, dt);
     this.yawCmd = damp(this.yawCmd, input.yaw, 6, dt);
 
     // Throttle.
@@ -108,7 +125,7 @@ export class PlayerController {
     const horiz = Math.sqrt(Math.max(0, 1 - a.fwd.y * a.fwd.y));
     q.premultiply(_q.setFromAxisAngle(Y, -Math.sin(bank) * PLAYER.bankTurn * turnFactor * horiz * dt));
     // Gentle auto-level when hands are off.
-    if (Math.abs(input.roll) < 0.05 && Math.abs(input.pitch) < 0.05 && Math.abs(bank) < 0.9 && a.up.y > 0.2 && this.rollTime <= 0) {
+    if (!input.assist && Math.abs(input.roll) < 0.05 && Math.abs(input.pitch) < 0.05 && Math.abs(bank) < 0.9 && a.up.y > 0.2 && this.rollTime <= 0) {
       q.multiply(_q.setFromAxisAngle(Z, bank * 1.1 * dt));
     }
     q.normalize();
