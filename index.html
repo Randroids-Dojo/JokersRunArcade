@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joker's Run — Mission 01</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 16 L16 30 L4 16 Z' fill='%23c0282d'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="game">
+      <canvas id="gl"></canvas>
+      <div id="cloudfog"></div>
+      <div id="vignette"></div>
+      <canvas id="overlay"></canvas>
+
+      <div id="hud" class="off">
+        <div id="tl">
+          <div class="lbl">SCORE</div>
+          <div id="score">0</div>
+          <div id="hotstart" class="hidden">HOT START <b>x1.0</b></div>
+          <div id="combo" class="hidden">
+            <div id="combo-text">COMBO <b>x0</b></div>
+            <div class="bar"><i id="combo-bar"></i></div>
+          </div>
+        </div>
+
+        <div id="tc">
+          <div id="objective"></div>
+          <div id="timer" class="hidden"><span id="timer-label"></span><b id="timer-value"></b></div>
+          <div id="subtimer"></div>
+        </div>
+
+        <div id="tr">
+          <div id="mission-tag">M01 <span>·</span> JOKER'S RUN</div>
+          <div id="phase-tag"></div>
+          <div id="scout-list"></div>
+          <div id="wing-order" class="hidden"></div>
+        </div>
+
+        <div id="boss" class="hidden">
+          <div id="boss-head"><span id="boss-name">ACE</span><span id="boss-stage"></span></div>
+          <div class="bar"><i id="boss-hp"></i></div>
+          <div id="boss-pressure-row"><span>PRESSURE</span><div class="bar thin"><i id="boss-pressure"></i></div></div>
+          <div id="boss-status"></div>
+        </div>
+
+        <div id="gauge-l" class="gauge"><span class="lbl">SPD</span><b id="spd">0</b><span class="unit">KM/H</span><div class="bar v"><i id="boost-bar"></i></div><span class="lbl small">BOOST</span></div>
+        <div id="gauge-r" class="gauge"><span class="lbl">ALT</span><b id="alt">0</b><span class="unit">M</span><div id="pullup" class="hidden">PULL UP</div></div>
+
+        <div id="bl"><canvas id="radar"></canvas></div>
+
+        <div id="br">
+          <div class="row"><span class="lbl">GUN</span><b>∞</b></div>
+          <div class="row"><span class="lbl">MSL</span><span id="rails"><i></i><i></i></span></div>
+          <div class="row"><span class="lbl">TGT</span><b id="lock-state">—</b></div>
+          <div class="row hull"><span class="lbl">HULL</span><div class="bar"><i id="hull-bar"></i></div><b id="hull-num">100</b></div>
+        </div>
+
+        <div id="prompt" class="hidden"></div>
+        <div id="popups"></div>
+        <div id="radio" class="hidden"><div id="radio-who"></div><div id="radio-text"></div></div>
+        <div id="banner"></div>
+        <div id="countdown"></div>
+        <div id="area-warn" class="hidden">RETURN TO COMBAT AREA</div>
+      </div>
+
+      <div id="letterbox"><div></div><div></div></div>
+
+      <section id="screen-title" class="screen">
+        <div class="title-wrap">
+          <div class="kicker"><span class="suit">♦</span> MISSION 01</div>
+          <h1>JOKER'S<br />RUN</h1>
+          <p class="tag">The fleet is running for neutral water. Enemy scouts have found it.<br />Don't let them talk.</p>
+          <button id="btn-launch" class="cta">LAUNCH <span>ENTER</span></button>
+          <div class="toggles">
+            <button data-toggle="invertPitch">INVERT PITCH: <b>OFF</b></button>
+            <button data-toggle="voice">RADIO VOICE: <b>ON</b></button>
+            <button data-toggle="music">MUSIC: <b>ON</b></button>
+            <button data-toggle="reducedMotion">REDUCED SHAKE: <b>OFF</b></button>
+          </div>
+          <div id="best" class="best"></div>
+        </div>
+        <div class="controls-card">
+          <h3>FLIGHT CONTROLS</h3>
+          <dl>
+            <dt>W / S</dt><dd>Climb / dive</dd>
+            <dt>A / D</dt><dd>Bank left / right</dd>
+            <dt>Q / E</dt><dd>Rudder</dd>
+            <dt>Shift</dt><dd>Boost</dd>
+            <dt>X</dt><dd>Brake — turns tighter</dd>
+            <dt>A A / D D</dt><dd>Barrel roll (also R) — dodges missiles</dd>
+            <dt>Space / LMB</dt><dd>Guns</dd>
+            <dt>F / RMB</dt><dd>Missile (lock first)</dd>
+            <dt>Tab</dt><dd>Next target</dd>
+            <dt>V (hold)</dt><dd>Look at target</dd>
+            <dt>1 2 3</dt><dd>Wingman orders</dd>
+            <dt>Esc</dt><dd>Pause</dd>
+          </dl>
+          <p class="pad-note">Gamepad: left stick fly · RT boost · LT brake · X guns · A missile · B roll · Y target</p>
+        </div>
+      </section>
+
+      <section id="screen-pause" class="screen hidden">
+        <div class="panel">
+          <h2>PAUSED</h2>
+          <div class="menu">
+            <button data-action="resume">RESUME</button>
+            <button data-action="retry">RESTART CHECKPOINT</button>
+            <button data-action="restart">RESTART MISSION</button>
+            <button data-action="title">QUIT TO TITLE</button>
+          </div>
+          <div class="toggles">
+            <button data-toggle="invertPitch">INVERT PITCH: <b>OFF</b></button>
+            <button data-toggle="voice">RADIO VOICE: <b>ON</b></button>
+            <button data-toggle="music">MUSIC: <b>ON</b></button>
+            <button data-toggle="reducedMotion">REDUCED SHAKE: <b>OFF</b></button>
+            <button data-toggle="mute">ALL SOUND: <b>ON</b></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-fail" class="screen hidden">
+        <div class="panel fail">
+          <h2>MISSION FAILED</h2>
+          <p id="fail-reason"></p>
+          <div class="menu">
+            <button data-action="retry" class="primary">RETRY FROM CHECKPOINT <span>ENTER</span></button>
+            <button data-action="restart">RESTART MISSION</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-debrief" class="screen hidden">
+        <div class="debrief">
+          <div class="kicker"><span class="suit">♦</span> MISSION 01 · JOKER'S RUN</div>
+          <h2>MISSION COMPLETE</h2>
+          <div class="deb-grid">
+            <div class="rank-box"><span>RANK</span><b id="deb-rank">A</b></div>
+            <dl id="deb-stats"></dl>
+          </div>
+          <div class="next">NEXT MISSION <b>BREAKOUT</b><span>in development</span></div>
+          <div class="menu">
+            <button data-action="restart" class="primary">FLY AGAIN <span>ENTER</span></button>
+            <button data-action="title">TITLE</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="card" class="hidden"><div class="card-kicker">NEXT MISSION</div><div class="card-title">BREAKOUT</div></div>
+      <div id="fade"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
