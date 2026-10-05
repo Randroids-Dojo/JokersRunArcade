@@ -677,7 +677,8 @@ export class Hud {
     return y;
   }
 
-  /** FIRE beside the gun pipper: right of it unless a target label is there, then left, below, above. */
+  /** FIRE beside the gun pipper: right of it unless a target label or score popup is there, then
+   *  left, below, above; if every side is taken, wherever it covers least. */
   private drawFire(x: number, y: number) {
     const ctx = this.ctx;
     ctx.save();
@@ -690,8 +691,21 @@ export class Hud {
       [x, y + 20, 'center', x - w / 2],
       [x, y - 20, 'center', x - w / 2],
     ];
-    const clear = (s: (typeof spots)[number]) => !this.labels.some((r) => s[3] < r[2] && s[3] + w > r[0] && s[1] - 7 < r[3] && s[1] + 7 > r[1]);
-    const [fx, fy, align] = spots.find(clear) ?? spots[0];
+    const taken = [...this.labels];
+    for (const el of document.querySelectorAll('#popups > *')) {
+      const r = el.getBoundingClientRect();
+      taken.push([r.left, r.top, r.right, r.bottom]);
+    }
+    const covered = (s: (typeof spots)[number]) =>
+      taken.reduce((sum, r) => sum + Math.max(0, Math.min(s[3] + w, r[2]) - Math.max(s[3], r[0])) * Math.max(0, Math.min(s[1] + 7, r[3]) - Math.max(s[1] - 7, r[1])), 0);
+    let best = spots[0];
+    let least = covered(best);
+    for (const s of spots.slice(1)) {
+      if (least === 0) break;
+      const c = covered(s);
+      if (c < least) [best, least] = [s, c];
+    }
+    const [fx, fy, align] = best;
     ctx.textAlign = align;
     ctx.fillText('FIRE', fx, fy);
     ctx.restore();
