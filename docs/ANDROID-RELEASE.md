@@ -19,6 +19,8 @@ Proposed local retention: `%USERPROFILE%/.android/jokers-run-signing/`, protecte
 
 At this handoff, automatic approval review rejected generation twice because it did not accept the forwarded parent approval as a confirmed handoff, even after checking the source task's official record. No keys were generated. A direct approval question is pending in the randroid-pc task. Do not substitute another key/tool/host to bypass this block.
 
+The current execution tools provide no way to change auto-review into a human action-time permission prompt. If that remains blocked, the user can review and run `scripts/prepare-and-sign-android.ps1 -CreateSigningKeys` themselves on randroid-pc using PowerShell. This script checks that all unsigned build outputs exist, generates separate local identities without hardcoded passwords, restricts the signing directory to the current user, protects passwords with Windows DPAPI, signs the AAB/release APK/debug APK, and verifies signatures. It refuses to overwrite an incomplete existing identity. The agent has only parsed/reviewed this script, not executed it.
+
 ## Verification and limits
 
 - Locked `npm ci`: succeeds, audit reports zero vulnerabilities.
