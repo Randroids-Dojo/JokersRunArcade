@@ -1,6 +1,6 @@
 # Joker's Run Android release handoff
 
-Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. Submission is held while the publisher confirms the expected update and recording rights.
+Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. Submission is held for additional gameplay fixes requested by the publisher. Version 1.0.1/code 2 is a tested pre-fix baseline.
 
 ## Identity and packaging
 
@@ -45,7 +45,7 @@ Exact final outputs, hashes, screenshots and source commit are in the delivered 
 
 Game models, terrain, ocean/effects are procedural source content. Three.js MIT, unmodified Chakra Petch SIL OFL1.1, AndroidX Apache2.0; notices under `public/licenses`. Launcher artwork is original art supplied by the parent task.
 
-Main introduced 35 ElevenLabs clips, five designed fictional cast voices, model eleven_v3, ffmpeg radio filtering. Source/text/manifest: `scripts/voice`, `src/voice-manifest.json`. Commercial permission depends on the generating account/plan and terms; repo provenance alone does not establish rights. Parent must obtain publisher confirmation before paid release. No additional generation, paid requests or new terms were used during preparation.
+Main introduced 35 ElevenLabs clips, five designed fictional cast voices, model eleven_v3, ffmpeg radio filtering. Source/text/manifest: `scripts/voice`, `src/voice-manifest.json`. At 08:43 UTC on October 5 the publisher confirmed: "I generated those with my paid account." Parent recorded this in response to the commercial-rights question. No third-party cloned voice evidence was found; cast.json describes five designed fictional voices. Retain the paid-generation provenance and comply with the applicable provider terms. No additional generation, paid requests or new terms were used during preparation.
 
 Play screenshots are actual production game renders in Chrome touch emulation, 1920x1080 from a 960x540 CSS viewport at 2x scale, god mode off. Separate emulator screenshots are actual Android screencaps. No fabricated gameplay or generated/composited UI.
 
@@ -55,7 +55,7 @@ Mission 01: launch from the carrier, master your flight controls, and stop enemy
 
 ## Remaining release gates
 
-1. Confirm whether recorded radio is the expected update or another is coming; integrate/rebuild/retest new gameplay commits. Keep Android work on its draft PR until settled.
-2. Confirm commercial recording rights and check physical phone/tablet touch, tilt, haptics/audio.
+1. The publisher confirmed "That plus some fixes" are coming after recorded radio. Await those commits, integrate/rebuild/retest them, and keep Android work on its draft PR until settled.
+2. Check physical phone/tablet touch, tilt, haptics/audio. Paid-generation confirmation is recorded above.
 3. Parent verifies final public policy/listing, app access, rating, Data safety, pricing/distribution.
 4. Replace saved code 1 with signed code 2+; inspect Play processing/pre-launch results and account access/testing requirements. Saved drafts/build success do not establish publication.
