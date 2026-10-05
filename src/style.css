@@ -73,6 +73,11 @@ body {
   opacity: 0;
   transition: opacity 0.5s;
 }
+/* Keep the caption above the bottom letterbox bar. */
+#hud.cine #radio {
+  bottom: calc(9vh + 8px);
+  transition: bottom 0.6s ease;
+}
 .lbl {
   font-size: 12px;
   letter-spacing: 0.18em;
@@ -468,8 +473,10 @@ kbd {
 
 #popups {
   position: absolute;
-  left: calc(50% + 150px);
-  top: 38%;
+  /* Right of the altitude gauge, below the banner and above the prompt. */
+  left: calc(50% + 345px);
+  right: 12px;
+  top: 41%;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -478,7 +485,6 @@ kbd {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  white-space: nowrap;
   animation: popIn 0.25s ease-out both, popOut 0.5s ease-in 2s forwards;
 }
 .pop .pts {
@@ -512,6 +518,7 @@ kbd {
   position: absolute;
   left: 50%;
   bottom: 40px;
+  transition: bottom 0.6s ease;
   transform: translateX(-50%);
   width: min(620px, 56vw);
   padding: 10px 16px 12px;
@@ -542,7 +549,8 @@ kbd {
   position: absolute;
   left: 0;
   right: 0;
-  top: 30%;
+  /* Above the speed and altitude gauges. */
+  top: 26%;
   display: grid;
   justify-items: center;
   pointer-events: none;
@@ -1322,9 +1330,10 @@ body.touch #touch.live {
 }
 #t-orders {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 100px;
+  /* Centred (the row is about 224 px wide), but never into the BRAKE button when a camera
+     cutout on the right shifts the cluster left. */
+  right: max(calc(50% - 112px), calc(var(--sr) + 306px));
+  bottom: calc(var(--sb) + 8px);
   display: none;
   gap: 6px;
 }
@@ -1354,7 +1363,7 @@ body.touch #touch.live {
 #t-hint {
   position: absolute;
   left: 50%;
-  bottom: 22%;
+  bottom: 33%;
   transform: translateX(-50%);
   font-size: 13px;
   font-weight: 700;
@@ -1560,10 +1569,11 @@ body.touch #br .hull .bar {
 body.touch #prompt {
   left: calc(env(safe-area-inset-left, 0px) + 12px);
   right: auto;
-  top: 90px;
+  top: 104px;
   bottom: auto;
   transform: none;
-  width: min(214px, 27vw);
+  /* Narrower when a camera cutout pushes the column right, so it ends before the speed gauge. */
+  width: min(214px, 27vw, calc(50% - 216px - env(safe-area-inset-left, 0px)));
   max-width: none;
   padding: 7px 11px;
   text-align: left;
@@ -1579,7 +1589,8 @@ body.touch #prompt .step {
 }
 body.touch #radio {
   left: 30%;
-  right: 37%;
+  /* Ends before the button cluster, which a right-hand camera cutout pushes inward. */
+  right: max(37%, calc(env(safe-area-inset-right, 0px) + 306px));
   transform: none;
   width: auto;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
@@ -1592,34 +1603,60 @@ body.touch #radio-text {
   font-size: 13px;
 }
 body.touch #popups {
-  left: calc(50% + 46px);
-  top: 21%;
+  left: auto;
+  right: calc(50% + 30px);
+  top: 47.5%;
+  align-items: flex-end;
+}
+/* The radio caption steps up over the order chips (at once, so the two never overlap). */
+body.touch.orders #radio {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 44px);
+  transition: none;
 }
 body.touch .cta span,
 body.touch .menu button span {
   display: none;
 }
 body.touch .pop {
-  font-size: 12px;
+  font-size: 11px;
+  /* Long lines wrap rather than reach into the prompt panel on the left. */
+  max-width: 170px;
+  white-space: normal;
+  text-align: right;
 }
 body.touch .pop.combo {
-  font-size: 15px;
-}
-body.touch .pop.gold {
   font-size: 14px;
 }
+body.touch .pop.gold {
+  font-size: 13px;
+}
 body.touch #banner {
-  top: 24%;
+  top: 54px;
+}
+/* Pop in downward so the objective above stays clear. */
+body.touch .bn {
+  transform-origin: 50% 0;
 }
 body.touch .bn .main {
-  font-size: clamp(26px, 9vh, 52px);
+  font-size: clamp(22px, 7.2vh, 40px);
+}
+body.touch #hud.banner-up #timer,
+body.touch #hud.banner-up #subtimer,
+body.touch #hud.banner-up #boss {
+  opacity: 0;
+}
+body.touch #timer,
+body.touch #subtimer,
+body.touch #boss {
+  transition: opacity 0.2s;
 }
 body.touch .bn .sub {
   font-size: 11px;
   margin-top: 4px;
 }
 body.touch .bn.warning {
-  padding: 8px 0 10px;
+  padding: 6px 0 8px;
+  width: 48vw;
 }
 body.touch #countdown {
   font-size: 76px;

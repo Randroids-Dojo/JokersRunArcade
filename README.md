@@ -103,7 +103,7 @@ GOD=1 node scripts/playtest.mjs ace 1 120     # one phase, invulnerable
 node scripts/mobile.mjs                       # phone emulation, real multi-touch, 28 checks
 ```
 
-The scripts drive the installed Google Chrome through `playwright-core`. `node scripts/radio.mjs` flies the mission and logs whether each radio line played its clip.
+The scripts drive the installed Google Chrome through `playwright-core`. `node scripts/radio.mjs` flies the mission and logs whether each radio line played its clip. `node scripts/layout.mjs` flies it in phone emulation and reports any two HUD texts, panels or touch controls that overlap; it should end with `0 overlapping pairs`. `CUTOUT=left` or `CUTOUT=right` adds a landscape camera-cutout inset, and `DESKTOP=1` checks the keyboard layout instead.
 
 ## Radio voices
 
