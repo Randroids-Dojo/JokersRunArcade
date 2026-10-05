@@ -11,3 +11,5 @@ android/local.properties
 *.jks
 *.keystore
 release-artifacts/
+scripts/voice/auditions/
+__pycache__/

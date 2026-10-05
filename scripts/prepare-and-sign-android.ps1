@@ -48,6 +48,8 @@ foreach ($kind in @('upload','debug')) {
     }
     & (Join-Path $PSScriptRoot 'sign-android.ps1') -Kind $kind
 }
-& "$env:JAVA_HOME\bin\jarsigner.exe" -verify (Join-Path $outRoot 'jokers-run-1.0.0-upload-signed.aab')
+$versionMatch = [regex]::Match((Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'android\app\build.gradle')), "versionName '([0-9]+\.[0-9]+\.[0-9]+)'")
+if (-not $versionMatch.Success) { throw 'Cannot determine the release version from build.gradle' }
+& "$env:JAVA_HOME\bin\jarsigner.exe" -verify (Join-Path $outRoot "jokers-run-$($versionMatch.Groups[1].Value)-upload-signed.aab")
 if ($LASTEXITCODE -ne 0) { throw 'Bundle signature verification failed' }
 Write-Output 'Signed AAB, release APK and separate debug APK are in release-artifacts. Private keys and DPAPI-protected passwords remain in the current-user-only signing directory. Retain this directory and Windows user access for future updates; do not upload it.'

@@ -2,6 +2,7 @@
 import { chromium } from 'playwright-core';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
+import { verifyRadio } from './radio-qa.mjs';
 
 const base = process.env.URL ?? 'http://127.0.0.1:5191/';
 const out = 'release-artifacts';
@@ -35,6 +36,7 @@ try {
   assert.equal(await page.evaluate(() => jokerNativeBack()), true);
   await page.locator('#btn-launch').tap();
   await page.waitForFunction(() => __joker.game.state === 'play');
+  await verifyRadio(page, check);
   assert.equal(await page.evaluate(() => jokerNativeBack()), false);
   assert.equal(await page.evaluate(() => __joker.game.state), 'paused');
   check('native Back pauses gameplay');

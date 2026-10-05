@@ -1,60 +1,61 @@
 # Joker's Run Android release handoff
 
-Prepared 2026-10-05 for Randroid LLC / Toyboxes. This is the offline package of Mission 01, with no monetization SDK. The Play Console parent task owns pricing, listing and submission.
+Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. Submission is held while the publisher confirms the expected update and recording rights.
 
-## Identity and artifacts
+## Identity and packaging
 
-- Package: `app.toyboxes.jokersrun`; no prior Android identity/signing config existed in this source. Parent confirmed Toyboxes had no existing app entries.
-- Version name `1.0.0`, version code `1`; min SDK `26`, compile/target SDK `36`.
-- Java Activity + AndroidX WebViewAssetLoader serves bundled `dist/` over a reserved local HTTPS origin. External requests and navigation are blocked, with no INTERNET permission. Changes require an app update.
-- Build: JDK17, Gradle8.13 (checksum pinned), AGP8.12.2, SDK build-tools36.0.0. WebKit1.14.0. No packaged native `.so` libraries.
-- Release outputs: `android/app/build/outputs/bundle/release/app-release.aab`, `android/app/build/outputs/apk/release/app-release-unsigned.apk`. Debug APK is also deliberately unsigned until signing is authorized.
-- Adaptive icon uses parent-supplied original jet artwork (Library `libfile_cd97cfb7632c8191ad6e6a86bad9a041`) with safe padding; original RGB PNG remains the legacy fallback. Store assets belong to the parent task.
+- Package `app.toyboxes.jokersrun`; no prior Android identity existed in the source and the parent confirmed no existing Toyboxes Play app.
+- Version `1.0.1`, version code `2`, incorporates main's recorded-radio update `ea123d2386a6239b1502a9a5eebb297340258f19`. Code 1 is already uploaded to a saved Console draft and must be replaced before submission.
+- Minimum API26, target/compile API36. JDK17, Gradle8.13 with pinned checksum, AGP8.12.2, build-tools36.0.0, AndroidX WebKit1.14.0.
+- Java Activity serves the complete bundled production game through WebViewAssetLoader's local HTTPS origin. No INTERNET permission; external requests/navigation are blocked. No bundled native `.so` libraries. Updates require an app release.
+- Adaptive icon uses parent-supplied original jet artwork padded for launcher masks. Store artwork belongs to the parent task.
 
-## Signing and submission gate
+## Build and signing
 
-The build config never silently creates a debug or release keystore. No private credentials belong in Git, Library, build archives or screenshots. The upload-signed AAB is needed for Play; an unsigned AAB cannot be submitted. Google Play App Signing should own the app signing key, while the publisher retains its separate upload key.
+Run `npm ci` and `npm run build` at the root, then `android/gradlew.bat -p android bundleRelease assembleRelease assembleDebug lintRelease` with the existing JDK17/SDK36 environment. Outputs under `android/app/build/outputs/` are deliberately unsigned, including debug. The project never generates signing credentials during a build.
 
-Proposed local retention: `%USERPROFILE%/.android/jokers-run-signing/`, protected to the current user, with separate `upload.jks` / alias `jokers-run-upload` and `debug.jks` / alias `jokers-run-debug`, each with a random password retained using Windows DPAPI (`*-password.xml`). Public PEM certificates may be shared; private keys/passwords must remain local. `scripts/sign-android.ps1` uses this approved workflow without printing passwords and verifies APK signatures. The script does not generate keys.
+The publisher manually created and retained separate upload/debug identities on this PC. Version 1.0.1 signing uses only these existing identities via `scripts/sign-android.ps1 -Kind upload` and `-Kind debug`. Output filenames derive from versionName; never regenerate keys for an update. Private keys and Windows DPAPI password files stay in the user's `.android/jokers-run-signing` directory. Do not put that directory in Git, Library, evidence archives or screenshots. Public certificates may be shared.
 
-At this handoff, automatic approval review rejected generation twice because it did not accept the forwarded parent approval as a confirmed handoff, even after checking the source task's official record. No keys were generated. A direct approval question is pending in the randroid-pc task. Do not substitute another key/tool/host to bypass this block.
+Upload certificate SHA256: `0e6da2776f5ad1932ee49c2f0ccc4816fc9f4d0b4606a77bb5d49debae879553`. Separate debug certificate SHA256: `b9e4cb9b6285a2dae8ce68adc7beaa2489cc4e3db3e009010698337132fa80a1`. Play App Signing owns the distribution identity; the local upload key signs uploads. Self-signed/PKIX jarsigner warnings alone do not mean a corrupt signature. Verify final bundles with bundletool/jarsigner and APKs with apksigner.
 
-The current execution tools provide no way to change auto-review into a human action-time permission prompt. If that remains blocked, the user can review and run `scripts/prepare-and-sign-android.ps1 -CreateSigningKeys` themselves on randroid-pc using PowerShell. This script checks that all unsigned build outputs exist, generates separate local identities without hardcoded passwords, restricts the signing directory to the current user, protects passwords with Windows DPAPI, signs the AAB/release APK/debug APK, and verifies signatures. It refuses to overwrite an incomplete existing identity. The agent has only parsed/reviewed this script, not executed it.
+## Verification
 
-## Verification and limits
+- Locked npm install: zero audit vulnerabilities. TypeScript and Vite production build pass.
+- `scripts/mobile.mjs`: 28 touch-control checks, including simultaneous touch and synthetic tilt conventions; fails on failed checks or page errors.
+- `scripts/release-qa.mjs`: production offline resources, privacy, Back event contract, background/audio suspension, local settings, four phone/tablet/portrait layouts and real gameplay captures. `scripts/radio-qa.mjs` checks decoding/durations of all 35 clips plus playback, mute and RADIO VOICE off.
+- `scripts/mission-qa.mjs`: full mission through actual bot inputs, direct steering, 2x simulation, god mode off. This does not measure human difficulty.
+- Android bundle/APK compilation and release lint pass. API36 may ignore landscape requests on large screens; portrait shows the rotate prompt and pauses. Portrait play is not implemented.
+- Isolated API36 Android16 AOSP x86_64 emulator, Pixel6 profile, WHPX/host GPU, WebView133. `scripts/android-qa.mjs` uses WebView CDP and actual Android Back/Home to test WebGL2, touch, simultaneous stick/guns, boost/brake, lifecycle pause/audio, privacy, local radio decoding, haptics/motion API availability. Release APK smoke testing is separate because release debugging is disabled.
+- Physical phones/tablets remain untested. Actual tilt mapping/comfort, vibration, speaker quality and human difficulty need publisher device testing. Emulator API availability does not measure those properties.
 
-- Locked `npm ci`: succeeds, audit reports zero vulnerabilities.
-- TypeScript check and Vite production build: pass.
-- Existing Chrome mobile suite: 28/28 pass, including real multi-touch via CDP and synthetic tilt conventions. Script now returns failure on failed checks/page errors.
-- Production Chrome suite: offline local fonts/assets and in-app privacy policy; Back behavior through the native event contract; background freezes simulation/audio and foreground stays paused; local settings; landscape 640x360 / 960x540 / 1280x800 and portrait 800x1280; no remote requests or resource/page/console errors.
-- Full mission: real input bot, direct steering setting, 2x simulation, god mode off; reaches debrief with score67,790 and hull100, no page errors. This is automation coverage; human difficulty/comfort and audio quality remain unmeasured.
-- Android bundle/APK compilation and release lint pass with zero errors. Remaining lint warnings concern supported newer manifest attributes, pinned tooling, orientation advisory and icon polish. API36 can ignore landscape requests on large screens; portrait shows the existing rotate prompt and pauses. Tablet portrait play is not implemented.
-- No adb-connected physical devices; no emulator/system image installed. Native WebView rendering, runtime lifecycle/predictive Back, actual sensor mapping/availability, sound and vibration are **not tested on Android**. Browser event tests do not establish native runtime success. Physical phone/tablet touch/tilt and cutout testing is still required before paid production release.
+Exact final outputs, hashes, screenshots and source commit are in the delivered release report/evidence archive.
 
-## Privacy, data safety and permissions
+## Privacy and data safety
 
-- Only declared permission in the merged release manifest: `android.permission.VIBRATE` (normal, optional haptics; no dangerous permission prompt).
-- No accounts, ads, IAP, analytics/crash SDK, cookies, tracking identifiers, backend/API, network permission, sharing or uploads.
-- Private WebView localStorage: `jokersrun.best` (best numeric score) and `jokersrun.settings` (control/audio/accessibility choices). Delete via Clear storage/uninstall. Android backup and transfer excluded.
-- Optional motion readings steer locally, are not stored or transmitted. No activity/fitness/location sensor purpose.
-- Synthesized music/effects local. Radio speech only selects `localService` English voices, with captions if no local voice exists. System WebView/OS updates and user support email have their own provider behavior.
-- App-defined cryptography/encryption, export crypto libraries or transmission: none found. HTTPS-looking origin is intercepted local assets, not a connection. Publisher/Console owns the legal export declaration.
-- Suggested Data safety answers for this exact Android build: no collected/shared user data, no account creation, no account deletion flow, no advertising ID, no ads, no in-app purchases. Do not describe local-only settings/sensors as server collection. Reassess if a later SDK/network feature is added.
-- Public policy source: `public/privacy.html`, publisher Randroid LLC, `support@toyboxes.app`. In-app link works offline. Parent must verify a publicly reachable deployed `/privacy.html` URL for Console; a draft source URL is insufficient.
+- Only declared permission: `android.permission.VIBRATE`, a normal permission for optional local haptics.
+- No accounts, ads, IAP, analytics/crash SDK, tracking identifiers, backend, server calls, sharing or uploads.
+- Private localStorage: `jokersrun.best` (best score), `jokersrun.settings` (controls/audio/accessibility). Erase via Clear storage/uninstall. Android backup and transfer excluded.
+- Optional motion readings steer locally, are not stored/transmitted and are not used for activity, fitness or location.
+- Music/effects and 35 prerecorded radio clips play locally. ElevenLabs generation and Whisper transcription are development tooling, not packaged/executed by the game. No ElevenLabs API/key/SDK in the app.
+- No app-defined encryption or cryptography libraries found. HTTPS-looking origin is intercepted local assets. Publisher owns the legal export declaration.
+- Suggested Data safety answers for this build: no collected/shared user data, accounts, ads, advertising ID or in-app purchases. Reassess if networking/SDKs are added.
+- Policy: `public/privacy.html`, Randroid LLC, `support@toyboxes.app`; in-app offline. Public URL `https://jokers-run-arcade.vercel.app/privacy.html`. Verify deployed text matches recorded-radio wording.
 
-## Assets and notices
+## Assets and rights
 
-Game models/terrain/ocean/effects/audio are procedural source content. Three.js is MIT (notice bundled). Unmodified Chakra Petch is SIL OFL1.1 (OFL bundled). AndroidX dependencies are Apache2.0 (text bundled). Launcher artwork is original art supplied by the parent release task. No third-party branded recordings/images are introduced.
+Game models, terrain, ocean/effects are procedural source content. Three.js MIT, unmodified Chakra Petch SIL OFL1.1, AndroidX Apache2.0; notices under `public/licenses`. Launcher artwork is original art supplied by the parent task.
 
-Screenshots are real Chrome renders of the same production assets in mobile touch emulation, 1920x1080 PNG (16:9). No generated gameplay imagery, artwork composites, upscaling, or fabricated UI. Checkpoint-selected captures have god mode off. Full mission captures use the real-input bot with direct steering. They are not device/emulator screenshots; parent should label the evidence accurately.
+Main introduced 35 ElevenLabs clips, five designed fictional cast voices, model eleven_v3, ffmpeg radio filtering. Source/text/manifest: `scripts/voice`, `src/voice-manifest.json`. Commercial permission depends on the generating account/plan and terms; repo provenance alone does not establish rights. Parent must obtain publisher confirmation before paid release. No additional generation, paid requests or new terms were used during preparation.
+
+Play screenshots are actual production game renders in Chrome touch emulation, 1920x1080 from a 960x540 CSS viewport at 2x scale, god mode off. Separate emulator screenshots are actual Android screencaps. No fabricated gameplay or generated/composited UI.
 
 ## Release notes (en-US)
 
-Mission 01: launch from the carrier, master your flight controls, and stop enemy scouts before they transmit the fleet's position. Fight through dogfights, a canyon chase and an ace encounter. Play offline with touch controls, optional tilt steering, local best scores and checkpoint retries.
+Mission 01: launch from the carrier, master your flight controls, and stop enemy scouts before they transmit the fleet's position. Fight through dogfights, a canyon chase and an ace encounter. Play offline with touch controls, optional tilt steering, recorded radio voices, local best scores and checkpoint retries.
 
-## Final release checklist
+## Remaining release gates
 
-1. Resolve direct signing approval and create/retain the upload and separate debug identities safely. Sign/verify the final AAB and APK without exporting private keys.
-2. Install signed APK on emulator/physical devices and check WebGL, multi-touch, home/background/resume, predictive Back, portrait/tablet behavior, cutouts, tilt, haptics and audio. Request approval if installation presents new terms or charges.
-3. Verify final deployed privacy URL and final screenshot/art assets. Parent completes age/content rating, app access, Data safety, pricing and country distribution declarations.
-4. Upload signed AAB, inspect Play processing and pre-launch results; satisfy account testing/production-access requirements. Do not infer launch success from building a package or drafting a listing.
+1. Confirm whether recorded radio is the expected update or another is coming; integrate/rebuild/retest new gameplay commits. Keep Android work on its draft PR until settled.
+2. Confirm commercial recording rights and check physical phone/tablet touch, tilt, haptics/audio.
+3. Parent verifies final public policy/listing, app access, rating, Data safety, pricing/distribution.
+4. Replace saved code 1 with signed code 2+; inspect Play processing/pre-launch results and account access/testing requirements. Saved drafts/build success do not establish publication.

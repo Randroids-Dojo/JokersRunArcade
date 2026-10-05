@@ -1,0 +1,142 @@
+{
+  "HALCYON|We're almost safe. Keep the skies clear until we reach the coast.": {
+    "file": "voice/halcyon-we-re-almost-safe-keep-the-skies-clear-u-356ca37b.mp3",
+    "dur": 3.27
+  },
+  "JOKER 2|Looking sharp, lead.": {
+    "file": "voice/joker-2-looking-sharp-lead-d8baf017.mp3",
+    "dur": 1.12
+  },
+  "HALCYON|Drones away. Three targets, Joker.": {
+    "file": "voice/halcyon-drones-away-three-targets-joker-9cc735ac.mp3",
+    "dur": 1.96
+  },
+  "HALCYON|Number two jams missiles. Guns only.": {
+    "file": "voice/halcyon-number-two-jams-missiles-guns-only-2bc7e14d.mp3",
+    "dur": 2.49
+  },
+  "HALCYON|Last one's quick. Stay on him.": {
+    "file": "voice/halcyon-last-one-s-quick-stay-on-him-68e265cc.mp3",
+    "dur": 1.67
+  },
+  "JOKER 2|Not bad. Looks like you remember how to shoot.": {
+    "file": "voice/joker-2-not-bad-looks-like-you-remember-how-to-s-d996034c.mp3",
+    "dur": 2.26
+  },
+  "LANTERN|Multiple contacts, bearing two-seven-zero. They're not ours!": {
+    "file": "voice/lantern-multiple-contacts-bearing-two-seven-zero-7170926c.mp3",
+    "dur": 3.42
+  },
+  "JOKER 3|Recon planes, three of them. Escorts too.": {
+    "file": "voice/joker-3-recon-planes-three-of-them-escorts-too-046b771c.mp3",
+    "dur": 2.38
+  },
+  "JOKER 2|Two on your six!": {
+    "file": "voice/joker-2-two-on-your-six-8a4fef4a.mp3",
+    "dur": 1.16
+  },
+  "LANTERN|More bandits inbound!": {
+    "file": "voice/lantern-more-bandits-inbound-2f916509.mp3",
+    "dur": 1.06
+  },
+  "JOKER 3|Don't let them transmit!": {
+    "file": "voice/joker-3-don-t-let-them-transmit-a7de54fa.mp3",
+    "dur": 1.41
+  },
+  "JOKER 2|Splash one!": {
+    "file": "voice/joker-2-splash-one-1735b4fe.mp3",
+    "dur": 0.99
+  },
+  "JOKER 3|Splash one!": {
+    "file": "voice/joker-3-splash-one-b0559420.mp3",
+    "dur": 1.01
+  },
+  "JOKER 4|Splash one!": {
+    "file": "voice/joker-4-splash-one-eb398a31.mp3",
+    "dur": 1.36
+  },
+  "JOKER 3|Good kill!": {
+    "file": "voice/joker-3-good-kill-510b1de9.mp3",
+    "dur": 1.29
+  },
+  "JOKER 3|Nice shooting, lead.": {
+    "file": "voice/joker-3-nice-shooting-lead-6ec5592d.mp3",
+    "dur": 1.63
+  },
+  "JOKER 3|That's another one.": {
+    "file": "voice/joker-3-that-s-another-one-3411bde7.mp3",
+    "dur": 1.75
+  },
+  "JOKER 2|Scout breaking east!": {
+    "file": "voice/joker-2-scout-breaking-east-a5bb7f95.mp3",
+    "dur": 1.23
+  },
+  "JOKER 3|We'll keep the rest busy. Go!": {
+    "file": "voice/joker-3-we-ll-keep-the-rest-busy-go-415cbf74.mp3",
+    "dur": 1.79
+  },
+  "JOKER 2|Right behind you, lead. Lost the last scout in the clouds.": {
+    "file": "voice/joker-2-right-behind-you-lead-lost-the-last-scou-838d4ff7.mp3",
+    "dur": 3.41
+  },
+  "JOKER 3|Escorts are breaking formation... why?": {
+    "file": "voice/joker-3-escorts-are-breaking-formation-why-61a9ce27.mp3",
+    "dur": 3.04
+  },
+  "JOKER 2|That one's different.": {
+    "file": "voice/joker-2-that-one-s-different-5c7eb0c3.mp3",
+    "dur": 1.16
+  },
+  "JOKER 3|Splash the ace!": {
+    "file": "voice/joker-3-splash-the-ace-13da5b93.mp3",
+    "dur": 1.42
+  },
+  "JOKER 4|He's coming straight at you!": {
+    "file": "voice/joker-4-he-s-coming-straight-at-you-9167d616.mp3",
+    "dur": 1.25
+  },
+  "JOKER 2|He's losing altitude. Hit him now!": {
+    "file": "voice/joker-2-he-s-losing-altitude-hit-him-now-801af535.mp3",
+    "dur": 2.04
+  },
+  "LANTERN|Last scout's running low. It's about to transmit!": {
+    "file": "voice/lantern-last-scout-s-running-low-it-s-about-to-t-c532f3ca.mp3",
+    "dur": 2.38
+  },
+  "HALCYON|All scouts destroyed.": {
+    "file": "voice/halcyon-all-scouts-destroyed-fb630c6b.mp3",
+    "dur": 1.32
+  },
+  "JOKER 3|The ace is bugging out.": {
+    "file": "voice/joker-3-the-ace-is-bugging-out-6b29bc1b.mp3",
+    "dur": 1.65
+  },
+  "HALCYON|Carrier is still safe.": {
+    "file": "voice/halcyon-carrier-is-still-safe-ed5b38bd.mp3",
+    "dur": 1.35
+  },
+  "HALCYON|Enemy forces were closer than expected.": {
+    "file": "voice/halcyon-enemy-forces-were-closer-than-expected-5f72ea37.mp3",
+    "dur": 2.16
+  },
+  "LANTERN|We may have been detected anyway.": {
+    "file": "voice/lantern-we-may-have-been-detected-anyway-0ea06a6a.mp3",
+    "dur": 1.96
+  },
+  "JOKER 2|Copy. Covering you, lead.": {
+    "file": "voice/joker-2-copy-covering-you-lead-3cb74304.mp3",
+    "dur": 1.49
+  },
+  "JOKER 2|Going after the scouts.": {
+    "file": "voice/joker-2-going-after-the-scouts-8bbd6abd.mp3",
+    "dur": 1.74
+  },
+  "JOKER 2|Splitting up. Four, take the scouts.": {
+    "file": "voice/joker-2-splitting-up-four-take-the-scouts-5678d705.mp3",
+    "dur": 2.36
+  },
+  "JOKER 2|Missile on you, lead! Break!": {
+    "file": "voice/joker-2-missile-on-you-lead-break-95ad5de1.mp3",
+    "dur": 2.35
+  }
+}
