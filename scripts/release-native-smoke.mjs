@@ -11,14 +11,15 @@ const serial=process.env.ANDROID_SERIAL??'emulator-5554';
 const adb=(...args)=>execFileSync(adbPath,['-s',serial,...args],{encoding:'utf8',timeout:20000}).trim();
 const out='release-artifacts/native';
 mkdirSync(out,{recursive:true});
-const browser=await chromium.connectOverCDP('http://127.0.0.1:9223',{noDefaults:true});
-const page=browser.contexts()[0].pages().find(p=>p.url().includes('appassets.androidplatform.net'));
+let browser=await chromium.connectOverCDP('http://127.0.0.1:9223',{noDefaults:true});
+let page=browser.contexts()[0].pages().find(p=>p.url().includes('appassets.androidplatform.net'));
 assert.ok(page);
-const errors=[],checks=[],screenshots=[];
+const prior=process.env.PORTRAIT_ONLY==='1'?JSON.parse(readFileSync(`${out}/release-smoke.json`,'utf8')):null;
+const errors=[],checks=[...(prior?.checks??[])],screenshots=[...(prior?.screenshots??[])];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 const check=(name)=>{checks.push(name);console.log(`PASS ${name}`);};
-const capture=name=>{const file=`${name}.png`;writeFileSync(`${out}/${file}`,execFileSync(adbPath,['-s',serial,'exec-out','screencap','-p'],{timeout:30000}));screenshots.push(file);};
+const capture=name=>{const file=`${name}.png`;writeFileSync(`${out}/${file}`,execFileSync(adbPath,['-s',serial,'exec-out','screencap','-p'],{timeout:30000,maxBuffer:16*1024*1024}));screenshots.push(file);};
 const tap=async selector=>{
   const box=await page.locator(selector).first().boundingBox();assert.ok(box);
   const dpr=await page.evaluate(()=>devicePixelRatio);
@@ -30,6 +31,7 @@ const tap=async selector=>{
 };
 const visible=async id=>page.locator(`#${id}`).isVisible();
 try {
+  if(!prior) {
   await page.waitForFunction(()=>document.getElementById('btn-launch'));
   assert.equal(await page.evaluate(()=>typeof window.__joker),'undefined');
   assert.ok(await visible('screen-title'));
@@ -62,10 +64,19 @@ try {
   await page.waitForFunction(()=>!document.getElementById('screen-pause').classList.contains('hidden'));
   capture('07-release-background-paused');
   check('Home and foreground preserve explicit pause');
+  }
   adb('shell','settings','put','system','accelerometer_rotation','0');
   adb('shell','settings','put','system','user_rotation','0');
   adb('shell','wm','size','1600x2560');adb('shell','wm','density','160');
-  await page.waitForTimeout(5000);
+  // Changing the emulator density recreates the Activity and its WebView target.
+  await new Promise(resolve=>setTimeout(resolve,5000));
+  await browser.close().catch(()=>{});
+  const appPid=adb('shell','pidof','app.toyboxes.jokersrun');
+  adb('forward','tcp:9223',`localabstract:webview_devtools_remote_${appPid}`);
+  browser=await chromium.connectOverCDP('http://127.0.0.1:9223',{noDefaults:true});
+  page=browser.contexts()[0].pages().find(p=>p.url().includes('appassets.androidplatform.net'));
+  assert.ok(page);
+  await page.waitForFunction(()=>document.getElementById('rotate'));
   assert.ok(await page.evaluate(()=>innerWidth<innerHeight));
   assert.ok(await visible('rotate'));
   capture('11-release-tablet-portrait');
@@ -76,6 +87,6 @@ finally {
   adb('shell','wm','size','reset');adb('shell','wm','density','reset');
   adb('shell','settings','put','system','accelerometer_rotation','1');
   adb('shell','settings','put','system','user_rotation','0');
-  writeFileSync(`${out}/release-smoke.json`,JSON.stringify({environment:'API36 Android16 AOSP x86_64 emulator, Pixel6 profile, userdebug OS, signed release APK1.0.1/code2',method:'actual adb touch/Back/Home, screenshots; read-only page metadata through OS-debug WebView socket',apkSha256:createHash('sha256').update(readFileSync('release-artifacts/jokers-run-1.0.1-upload-signed.apk')).digest('hex'),checks,errors,screenshots,physicalDeviceTested:false,restoredDisplay:'1080x2400 density420, accelerometer rotation1, user rotation0'},null,2));
-  await browser.close();
+  writeFileSync(`${out}/release-smoke.json`,JSON.stringify({environment:'API36 Android16 AOSP x86_64 emulator, Pixel6 profile, userdebug OS, signed release APK1.0.1/code2',method:'actual adb touch/Back/Home, screenshots; read-only page metadata through OS-debug WebView socket; portrait target reattached after expected density Activity recreation',apkSha256:createHash('sha256').update(readFileSync('release-artifacts/jokers-run-1.0.1-upload-signed.apk')).digest('hex'),checks,errors,priorHarnessErrors:prior?.errors??[],screenshots,physicalDeviceTested:false,restoredDisplay:'1080x2400 density420, accelerometer rotation1, user rotation0'},null,2));
+  await browser.close().catch(()=>{});
 }
