@@ -18,7 +18,7 @@ const errors=[],checks=[],screenshots=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 const check=(name)=>{checks.push(name);console.log(`PASS ${name}`);};
-const capture=name=>{const file=`${name}.png`,remote=`/sdcard/jokers-qa-${file}`;adb('shell','screencap','-p',remote);adb('pull',remote,`${out}/${file}`);screenshots.push(file);};
+const capture=name=>{const file=`${name}.png`;writeFileSync(`${out}/${file}`,execFileSync(adbPath,['-s',serial,'exec-out','screencap','-p'],{timeout:30000}));screenshots.push(file);};
 const tap=async selector=>{
   const box=await page.locator(selector).first().boundingBox();assert.ok(box);
   const dpr=await page.evaluate(()=>devicePixelRatio);

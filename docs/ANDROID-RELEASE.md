@@ -1,6 +1,6 @@
 # Joker's Run Android release handoff
 
-Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. The requested HUD/audio fixes from main61d28d828e87929c919436d31ff90cf901f5ea4f are integrated into version1.0.1/code2. Parent reviews the final candidate before Play submission.
+Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. The requested HUD/audio fixes from main61d28d828e87929c919436d31ff90cf901f5ea4f and FIRE/score-popup fix4c0822e151ba791fb3aaf04ae26227a75ea2a2b9 are integrated into version1.0.1/code2. Parent reviews the final candidate before Play submission.
 
 ## Identity and packaging
 
@@ -24,8 +24,10 @@ Upload certificate SHA256: `0e6da2776f5ad1932ee49c2f0ccc4816fc9f4d0b4606a77bb5d4
 - `scripts/mobile.mjs`: 28 touch-control checks, including simultaneous touch and synthetic tilt conventions; fails on failed checks or page errors.
 - `scripts/release-qa.mjs`: production offline resources, privacy, Back event contract, background/audio suspension, local settings, four phone/tablet/portrait layouts and real gameplay captures. `scripts/radio-qa.mjs` checks decoding/durations of all 35 clips plus playback, mute and RADIO VOICE off.
 - `scripts/mission-qa.mjs`: full mission through actual bot inputs, direct steering, 2x simulation, god mode off. This does not measure human difficulty.
+- `scripts/layout.mjs`: full-mission DOM panel/control audits for phone, desktop and left/right cutouts. `scripts/store-captures.mjs` checks sampled canvas ace/missile labels against mission panels and captures actual gameplay. Canvas text also reserves objective/timer/ace regions.
 - Android bundle/APK compilation and release lint pass. API36 may ignore landscape requests on large screens; portrait shows the rotate prompt and pauses. Portrait play is not implemented.
 - Isolated API36 Android16 AOSP x86_64 emulator, Pixel6 profile, WHPX/host GPU, WebView133. `scripts/android-qa.mjs` uses WebView CDP and actual Android Back/Home to test WebGL2, touch, simultaneous stick/guns, boost/brake, lifecycle pause/audio, privacy, local radio decoding, haptics/motion API availability. Release APK smoke testing is separate because release debugging is disabled.
+- `scripts/native-mission-qa.mjs`: normal-speed native bot mission, god mode off, optional bounded checkpoint retries/transport resume. Final candidate reached debrief94,180 with one canyon retry; screenshot transfers caused recording gaps. This does not establish uninterrupted native monitoring or human difficulty. `scripts/release-native-smoke.mjs` uses actual adb inputs and captures for the signed release APK; read-only CDP is exposed by the QA AOSP userdebug OS, not application debug configuration.
 - Physical phones/tablets remain untested. Actual tilt mapping/comfort, vibration, speaker quality and human difficulty need publisher device testing. Emulator API availability does not measure those properties.
 
 Exact final outputs, hashes, screenshots and source commit are in the delivered release report/evidence archive.
@@ -55,7 +57,7 @@ Mission 01: launch from the carrier, master your flight controls, and stop enemy
 
 ## Remaining release gates
 
-1. The publisher's additional HUD/audio fixes are integrated. Run phone, left/right camera-cutout and desktop overlap audits plus native/mission checks, recheck latest main, and hand the signed candidate to the parent for review. Keep the PR draft until the release decision.
+1. The publisher's additional HUD/audio fixes are integrated. Phone, left/right cutout and desktop DOM overlap audits reached debrief with zero overlapping pairs; final canvas regression frames clear the observed text collisions. Hand the signed candidate and exact report/evidence to the parent for review. Keep the PR draft until the release decision.
 2. Check physical phone/tablet touch, tilt, haptics/audio. Paid-generation confirmation is recorded above.
 3. Parent verifies final public policy/listing, app access, rating, Data safety, pricing/distribution.
 4. Replace saved code 1 with signed code 2+; inspect Play processing/pre-launch results and account access/testing requirements. Saved drafts/build success do not establish publication.
