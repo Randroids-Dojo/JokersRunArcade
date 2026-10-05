@@ -59,7 +59,8 @@ export class AudioEngine {
     this.buildTones();
     this.music = new Music(ctx, this.musicBus, this.noiseBuf);
     if ('speechSynthesis' in window) {
-      const load = () => (this.voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en')));
+      // Never send radio text to a remote speech provider. Captions remain available.
+      const load = () => (this.voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en') && v.localService));
       load();
       speechSynthesis.onvoiceschanged = load;
     }
@@ -417,7 +418,7 @@ export class AudioEngine {
   }
 
   speak(text: string, who: string) {
-    if (!this.voiceOn || this.muted || !('speechSynthesis' in window)) return;
+    if (!this.voiceOn || this.muted || !('speechSynthesis' in window) || !this.voices.length) return;
     const u = new SpeechSynthesisUtterance(text);
     const profile = VOICE_PROFILES[who] ?? { pitch: 1, rate: 1.1, idx: 0 };
     u.pitch = profile.pitch;

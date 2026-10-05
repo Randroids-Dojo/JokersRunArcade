@@ -4,6 +4,32 @@ import { Bot } from './debugbot';
 
 const canvas = document.getElementById('gl') as HTMLCanvasElement;
 const game = new Game(canvas);
+const privacyDialog = document.getElementById('privacy-dialog') as HTMLDialogElement;
+document.querySelectorAll<HTMLButtonElement>('[data-privacy]').forEach(button => {
+  button.addEventListener('click', () => privacyDialog.showModal());
+});
+document.getElementById('privacy-close')!.addEventListener('click', () => privacyDialog.close());
+
+// Backgrounding must freeze the mission and audio, including Android lifecycle changes.
+function suspendGame() {
+  game.input.releaseAll();
+  game.pause();
+  void game.audio.ctx?.suspend();
+  game.audio.stopSpeech();
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) suspendGame();
+});
+window.addEventListener('joker:native-pause', suspendGame);
+window.addEventListener('joker:native-resume', () => game.input.releaseAll());
+// The native host uses Back to pause flight, return from pause to title, or exit title.
+(window as unknown as { jokerNativeBack: () => boolean }).jokerNativeBack = () => {
+  if (privacyDialog.open) { privacyDialog.close(); return false; }
+  if (game.state === 'title') return true;
+  if (game.state === 'play') game.pause();
+  else game.toTitle();
+  return false;
+};
 
 // ---------------------------------------------------------------- Menus
 

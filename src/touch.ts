@@ -101,6 +101,9 @@ export class TouchControls {
 
   releaseAll() {
     this.held.clear();
+    this.edges.clear();
+    this.taps.length = 0;
+    this.tapCand.clear();
     this.tgtDown.clear();
     this.boostDown.clear();
     this.boostLatched = false;

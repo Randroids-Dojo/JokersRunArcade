@@ -5,3 +5,9 @@ artifacts/
 .vercel
 .env*
 !.env.example
+android/.gradle/
+android/**/build/
+android/local.properties
+*.jks
+*.keystore
+release-artifacts/

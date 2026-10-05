@@ -12,9 +12,6 @@
     <link rel="apple-touch-icon" href="icon-180.png" />
     <title>Joker's Run — Mission 01</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 16 L16 30 L4 16 Z' fill='%23c0282d'/%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -112,6 +109,7 @@
             <button data-toggle="reducedMotion">REDUCED SHAKE: <b>OFF</b></button>
           </div>
           <div id="best" class="best"></div>
+          <button class="legal-link" data-privacy>PRIVACY POLICY</button>
         </div>
         <div class="controls-card">
           <h3>FLIGHT CONTROLS</h3>
@@ -152,6 +150,7 @@
             <button data-toggle="reducedMotion">REDUCED SHAKE: <b>OFF</b></button>
             <button data-toggle="mute">ALL SOUND: <b>ON</b></button>
           </div>
+          <button class="legal-link" data-privacy>PRIVACY POLICY</button>
         </div>
       </section>
 
@@ -182,6 +181,7 @@
         </div>
       </section>
 
+      <dialog id="privacy-dialog"><button id="privacy-close" aria-label="Close privacy policy">CLOSE</button><iframe title="Joker's Run privacy policy" src="privacy.html"></iframe></dialog>
       <div id="rotate"><div class="phone"><i></i></div><p>Turn your phone sideways</p><span>Joker's Run plays in landscape</span></div>
       <div id="card" class="hidden"><div class="card-kicker">NEXT MISSION</div><div class="card-title">BREAKOUT</div></div>
       <div id="fade"></div>
