@@ -2,7 +2,7 @@
 
 An arcade flight combat demo for the browser. You launch off a retreating carrier, run a timed flight check, shoot three training drones, then stop enemy recon planes before they send the fleet's position out: dogfight, canyon chase, two-stage ace, final 25-second intercept, epilogue.
 
-Three.js + TypeScript + Vite. All models, terrain, ocean, sky, effects, music, and sound are procedural. There are no asset files.
+Three.js + TypeScript + Vite. All models, terrain, ocean, sky, effects, music, and sound effects are procedural. The only asset files are the recorded radio voices.
 
 **[Play it](https://jokers-run-arcade.vercel.app)**
 
@@ -90,7 +90,7 @@ Scoring: MISSILE KILL +1,000 · GUN KILL +1,500 · CLOSE RANGE +500 · NO DAMAGE
 | `src/terrain.ts` | Height field (coast, cliffs, canyon, sea stacks) and the bridge |
 | `src/environment.ts` | Sky, ocean shader, clouds, storm front |
 | `src/hud.ts` | HUD overlay: target boxes, lead pipper, ladder, radar |
-| `src/audio.ts` | WebAudio engine, weapons, alerts, sequenced music, spoken radio |
+| `src/audio.ts` | WebAudio engine, weapons, alerts, sequenced music, radio voice clips |
 
 ## Playtest tooling
 
@@ -103,11 +103,37 @@ GOD=1 node scripts/playtest.mjs ace 1 120     # one phase, invulnerable
 node scripts/mobile.mjs                       # phone emulation, real multi-touch, 28 checks
 ```
 
-The scripts drive the installed Google Chrome through `playwright-core`.
+The scripts drive the installed Google Chrome through `playwright-core`. `node scripts/radio.mjs` flies the mission and logs whether each radio line played its clip.
+
+## Radio voices
+
+The radio chatter is pre-recorded with ElevenLabs, the same way the Animal-Sounds clips are made, and played through Web Audio, so mute, pause and the RADIO VOICE setting all apply to it. Each speaker has a voice designed for the part:
+
+| Speaker | Who | Voice |
+|---|---|---|
+| HALCYON | Carrier air operations | Deep, calm baritone, fifties |
+| LANTERN | Airborne early-warning controller | Crisp, clipped, thirties |
+| JOKER 2 | Veteran lead wingman | Smooth, dry, mid-thirties |
+| JOKER 3 | Younger wingman | Bright, quick, late twenties |
+| JOKER 4 | Wingman of few words | Low and gravelly, forties |
+
+- `scripts/voice/cast.json` holds each voice's description and ElevenLabs id. The model is `eleven_v3`.
+- `scripts/voice/lines.json` holds every radio line. Each line has a delivery tag such as `[urgent]`, and can carry a `say` override where the spoken text needs a nudge.
+- `scripts/voice/generate.py` renders the lines and runs each through a radio filter (300-3400 Hz band, compression, light clipping, faint hiss). It writes `public/voice/*.mp3` and `src/voice-manifest.json`.
+- The unfiltered takes are cached in `scripts/voice/raw/`, so only new or changed lines cost API calls.
+
+```sh
+PY=../ChannelKnowledgeBase/.venv/bin/python   # numpy + mlx_whisper; key from ELEVENLABS_API_KEY or ../ChannelKnowledgeBase/.env
+$PY scripts/voice/generate.py check     # lines.json matches every radio call in src/
+$PY scripts/voice/generate.py lines     # render new or changed lines
+$PY scripts/voice/generate.py verify    # transcribe every clip with Whisper and compare it with its caption
+```
+
+To re-roll a take, give its line a new `seed`. To recast a speaker, run `design WHO` (three previews land in the gitignored `scripts/voice/auditions/`), then `create WHO N`, then `lines`.
 
 ## Known limits
 
 - Difficulty was tuned against the bot, which aims perfectly and flies poorly. It clears the mission in about 2.5 minutes of game time. The 8–10 minute target for a human first run is an estimate, not measured.
-- Sound and the spoken radio (browser speech synthesis; quality depends on the system voices) were not judged by ear. Radio text always appears on screen.
+- Sound was not judged by ear. Every radio clip was transcribed with Whisper and matches its caption; the voices were picked by measured pitch, brightness, roughness and pace, and the delivery of each take was not judged by ear. Radio text always appears on screen.
 - Touch controls were verified in Chrome's phone emulation with real multi-touch events, not on a physical phone. Tilt steering was checked with synthetic orientation events against the W3C angle conventions; the feel on real hardware, iOS Safari behaviour, and haptics (Android only; iOS Safari has no vibration API) still need a device.
 - The fonts load from Google Fonts with a system fallback.

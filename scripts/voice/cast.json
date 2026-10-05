@@ -1,0 +1,39 @@
+{
+  "model": "eleven_v3",
+  "design_model": "eleven_ttv_v3",
+  "voice_settings": {
+    "stability": 0.5
+  },
+  "speakers": {
+    "HALCYON": {
+      "role": "Carrier air operations. Runs the training, reports to the whole flight.",
+      "description": "American man in his fifties, a seasoned naval carrier air operations officer. Deep, calm, resonant baritone with a slight gravel. Measured, steady, authoritative pacing; reassuring but all business. Perfect audio quality.",
+      "sample": "Joker, Halcyon. Deck is clear, winds are steady at twelve knots. We're almost safe. Keep the skies clear until we reach the coast. Drones away. Three targets. All scouts destroyed. Carrier is still safe.",
+      "voice_id": "E5molBxr5jDxURsr8k2o"
+    },
+    "LANTERN": {
+      "role": "Airborne early warning radar controller.",
+      "description": "American woman in her thirties, an airborne early warning radar controller. Crisp, clear, precise mid-pitched voice with a clipped, efficient military cadence. Alert and controlled, turning sharp and urgent when she warns of threats. Perfect audio quality.",
+      "sample": "All Joker flights, Lantern. Multiple contacts, bearing two-seven-zero, angels fifteen. They're not ours! More bandits inbound from the west. Last scout's running low. It's about to transmit!",
+      "voice_id": "po3rq9d29UwdhBMY1YZM"
+    },
+    "JOKER 2": {
+      "role": "Lead wingman. Veteran, dry humour, flew with the player before.",
+      "description": "American man in his mid-thirties, a veteran fighter pilot and the squadron's trusted wingman. Smooth, confident mid-low voice with a relaxed, dry, slightly teasing warmth that snaps to sharp and urgent in combat. Perfect audio quality.",
+      "sample": "Looking sharp, lead. Not bad. Looks like you remember how to shoot. Two on your six! Missile on you, lead! Break! Copy, covering you. Right behind you, lead. That one's different.",
+      "voice_id": "XAsiXRXuHhOrs0U7Jz2Q"
+    },
+    "JOKER 3": {
+      "role": "Younger wingman. Eager, spots threats, cheers kills.",
+      "description": "Young American woman in her late twenties, an eager fighter pilot. Bright, energetic, quick voice with youthful confidence and excitement, a little breathless in combat. Perfect audio quality.",
+      "sample": "Recon planes, three of them. Escorts too. Don't let them transmit! Good kill! Nice shooting, lead. We'll keep the rest busy. Go! Escorts are breaking formation... why? Splash the ace!",
+      "voice_id": "7sAlRHF3fKIXh6YRW9EA"
+    },
+    "JOKER 4": {
+      "role": "Quiet wingman of few words.",
+      "description": "American man in his forties, a quiet, laconic fighter pilot of few words. Low, gravelly, rough-edged voice, flat and unflappable, with a terse delivery. Perfect audio quality.",
+      "sample": "Four, copy. Taking the scouts. Splash one. He's coming straight at you! Tally two bandits, low, left side. Engaging. Four's clean, rejoining on your wing.",
+      "voice_id": "zZ1K0mtbqInPQCFOqz3z"
+    }
+  }
+}

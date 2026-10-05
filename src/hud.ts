@@ -56,7 +56,8 @@ export class Hud {
   private coast: THREE.Vector2[][];
   private proj = new THREE.Vector3();
   private cache: Record<string, string> = {};
-  onRadio: ((who: string, text: string) => void) | null = null;
+  /** Plays a radio line as it is shown; returns its spoken length in seconds (0 if silent). */
+  onRadio: ((who: string, text: string) => number) | null = null;
   radarRange = 4500;
   private radarRangeTarget = 4500;
   objectiveText = '';
@@ -301,12 +302,12 @@ export class Hud {
       const r = this.radioQ.shift()!;
       this.radioCur = r;
       this.radioT = 0;
-      this.radioDur = 1.8 + r.text.length * 0.055;
       this.show('radio', true);
       this.set('radio-who', 'text', r.who);
       this.set('radio', 'class', r.who.startsWith('JOKER') ? 'blue' : '');
       this.set('radio-text', 'text', '');
-      this.onRadio?.(r.who, r.text);
+      const spoken = this.onRadio?.(r.who, r.text) ?? 0;
+      this.radioDur = Math.max(1.8 + r.text.length * 0.055, spoken + 0.6);
     }
     // Numbers.
     const s = g.score;

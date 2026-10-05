@@ -160,7 +160,7 @@ export class Game {
     this.mission = new Mission(this);
     this.hud.onRadio = (who, text) => {
       this.audio.radioBlip();
-      this.audio.speak(text, who);
+      return this.audio.speak(text, who);
     };
     this.resize();
     window.addEventListener('resize', () => this.resize());
@@ -392,7 +392,6 @@ export class Game {
     this.input.releaseAll();
     this.showScreen('pause');
     void this.audio.ctx?.suspend();
-    if ('speechSynthesis' in window) speechSynthesis.pause();
   }
 
   resume() {
@@ -400,7 +399,6 @@ export class Game {
     this.state = 'play';
     this.showScreen(null);
     void this.audio.ctx?.resume();
-    if ('speechSynthesis' in window) speechSynthesis.resume();
   }
 
   setControls(on: boolean) {
@@ -507,6 +505,7 @@ export class Game {
 
   applyAudioSettings() {
     this.audio.voiceOn = this.settings.voice;
+    if (!this.settings.voice) this.audio.stopSpeech();
     this.audio.setMuted(this.settings.mute);
     this.audio.setMusicVolume(this.settings.music ? 0.5 : 0);
     this.rig.reducedMotion = this.settings.reducedMotion;

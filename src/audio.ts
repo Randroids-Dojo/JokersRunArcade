@@ -1,14 +1,20 @@
-// Fully synthesized audio: engine, weapons, alerts, music sequencer and radio voices.
+// Synthesized audio (engine, weapons, alerts, music sequencer) plus the recorded radio voices.
+
+import VOICE from './voice-manifest.json';
 
 export type Track = 'none' | 'calm' | 'combat' | 'boss' | 'final';
 
 const midi = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
+
+/** Radio clips by "WHO|text" (scripts/voice/generate.py). */
+const CLIPS: Record<string, { file: string; dur: number }> = VOICE;
 
 export class AudioEngine {
   ctx: AudioContext | null = null;
   private master!: GainNode;
   private sfx!: GainNode;
   private musicBus!: GainNode;
+  private voiceBus!: GainNode;
   private noiseBuf!: AudioBuffer;
   private gunBuf!: AudioBuffer;
   private boomBuf!: AudioBuffer;
@@ -30,7 +36,9 @@ export class AudioEngine {
   music: Music | null = null;
   muted = false;
   voiceOn = true;
-  private voices: SpeechSynthesisVoice[] = [];
+  private voiceLoads = new Map<string, Promise<AudioBuffer | null>>();
+  private voiceSrc: AudioBufferSourceNode | null = null;
+  private voiceReq = 0;
   private lastShot = 0;
 
   init() {
@@ -58,17 +66,16 @@ export class AudioEngine {
     this.buildEngine();
     this.buildTones();
     this.music = new Music(ctx, this.musicBus, this.noiseBuf);
-    if ('speechSynthesis' in window) {
-      const load = () => (this.voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en')));
-      load();
-      speechSynthesis.onvoiceschanged = load;
-    }
+    this.voiceBus = ctx.createGain();
+    this.voiceBus.gain.value = 0.8;
+    this.voiceBus.connect(this.master);
+    for (const clip of Object.values(CLIPS)) void this.loadVoice(clip.file);
   }
 
   setMuted(m: boolean) {
     this.muted = m;
     if (this.ctx) this.master.gain.setTargetAtTime(m ? 0 : 0.85, this.ctx.currentTime, 0.05);
-    if (m && 'speechSynthesis' in window) speechSynthesis.cancel();
+    if (m) this.stopSpeech();
   }
 
   setMusicVolume(v: number) {
@@ -416,33 +423,60 @@ export class AudioEngine {
     this.music?.setTrack(track, immediate);
   }
 
-  speak(text: string, who: string) {
-    if (!this.voiceOn || this.muted || !('speechSynthesis' in window)) return;
-    const u = new SpeechSynthesisUtterance(text);
-    const profile = VOICE_PROFILES[who] ?? { pitch: 1, rate: 1.1, idx: 0 };
-    u.pitch = profile.pitch;
-    u.rate = profile.rate;
-    u.volume = 0.95;
-    if (this.voices.length) {
-      const preferred = this.voices.filter((v) => /Daniel|Alex|Samantha|Karen|Moira|Tessa|Fred|Google|Aaron|Arthur|Rishi|Serena/i.test(v.name));
-      const pool = preferred.length >= 2 ? preferred : this.voices;
-      u.voice = pool[profile.idx % pool.length];
+  /** Plays the line's radio clip, cutting off any line still playing. Returns the clip
+   *  length in seconds (0 when nothing plays) so the caption can stay up as long. */
+  speak(text: string, who: string): number {
+    this.stopSpeech();
+    const clip = CLIPS[`${who}|${text}`];
+    if (!clip) {
+      console.warn(`No radio clip for ${who}: ${text}`);
+      return 0;
     }
-    speechSynthesis.speak(u);
+    if (!this.voiceOn || this.muted || !this.ctx) return 0;
+    const ctx = this.ctx;
+    const req = this.voiceReq;
+    const asked = ctx.currentTime;
+    void this.loadVoice(clip.file).then((buf) => {
+      // Skip a clip that arrives too late to match its caption.
+      if (!buf || req !== this.voiceReq || ctx.currentTime - asked > 1) return;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.voiceBus);
+      src.start(ctx.currentTime + 0.08); // after the squelch
+      src.onended = () => {
+        if (this.voiceSrc === src) this.voiceSrc = null;
+      };
+      this.voiceSrc = src;
+    });
+    return clip.dur + 0.08;
   }
 
   stopSpeech() {
-    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    this.voiceReq++;
+    try {
+      this.voiceSrc?.stop();
+    } catch {
+      // Already stopped.
+    }
+    this.voiceSrc = null;
+  }
+
+  private loadVoice(file: string): Promise<AudioBuffer | null> {
+    let p = this.voiceLoads.get(file);
+    if (!p && this.ctx) {
+      const ctx = this.ctx;
+      p = fetch(file)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${r.status} ${file}`))))
+        .then((b) => ctx.decodeAudioData(b))
+        .catch(() => {
+          this.voiceLoads.delete(file); // try again next time
+          return null;
+        });
+      this.voiceLoads.set(file, p);
+    }
+    return p ?? Promise.resolve(null);
   }
 }
-
-const VOICE_PROFILES: Record<string, { pitch: number; rate: number; idx: number }> = {
-  HALCYON: { pitch: 0.85, rate: 1.0, idx: 0 },
-  'JOKER 2': { pitch: 1.0, rate: 1.12, idx: 1 },
-  'JOKER 3': { pitch: 1.15, rate: 1.15, idx: 2 },
-  'JOKER 4': { pitch: 0.9, rate: 1.1, idx: 3 },
-  LANTERN: { pitch: 1.2, rate: 1.08, idx: 4 },
-};
 
 // ---------------------------------------------------------------- Music
 

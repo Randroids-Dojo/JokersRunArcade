@@ -202,6 +202,7 @@ export class Mission {
     g.hud.prompt(null);
     g.hud.clearBanners();
     g.hud.clearRadio();
+    g.audio.stopSpeech();
     g.hud.setRadarRange(4500);
     g.hud.setVisible(true);
     g.touchTeach = null;
