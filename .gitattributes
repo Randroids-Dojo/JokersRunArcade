@@ -1,0 +1,3 @@
+android/gradlew text eol=lf
+# Preserve the upstream OFL notice verbatim, including its original whitespace.
+public/fonts/OFL.txt -whitespace
