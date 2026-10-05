@@ -358,10 +358,11 @@ export class AudioEngine {
     this.tone(1250, 0.07, 'sine', 0.06, 0.02);
   }
 
+  /** Cockpit warning: short soft double chirps. (A square-wave two-tone read as an air horn on phone speakers.) */
   klaxon(times = 4) {
     for (let i = 0; i < times; i++) {
-      this.tone(660, 0.22, 'square', 0.07, i * 0.5, 640);
-      this.tone(880, 0.22, 'square', 0.07, i * 0.5 + 0.25, 860);
+      this.tone(1180, 0.09, 'triangle', 0.1, i * 0.5);
+      this.tone(1180, 0.09, 'triangle', 0.1, i * 0.5 + 0.15);
     }
   }
 
@@ -412,10 +413,12 @@ export class AudioEngine {
     src.stop(t + 1.05);
   }
 
+  /** Deep hit under the NEXT MISSION card. Sine drops only: sawtooth drones here came through
+   *  phone speakers (which can't play the fundamental) as a long buzzing horn. */
   stinger() {
     if (!this.ctx) return;
-    this.tone(55, 2.8, 'sawtooth', 0.12, 0, 41);
-    this.tone(58.3, 2.8, 'sawtooth', 0.08, 0, 43);
+    this.tone(70, 2.2, 'sine', 0.35, 0, 38);
+    this.tone(105, 1.2, 'sine', 0.12, 0, 60);
     this.explosion(0.35, true);
   }
 
@@ -652,19 +655,20 @@ class Music {
     o.stop(t + 0.35);
   }
 
+  /** Soft chord swell: detuned triangles. Detuned sawtooths here sounded like a horn section on phones. */
   pad(t: number, notes: number[], dur: number, vol: number) {
     const f = this.ctx.createBiquadFilter();
     f.type = 'lowpass';
-    f.frequency.value = 1100;
+    f.frequency.value = 900;
     const g = this.ctx.createGain();
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + dur * 0.3);
+    g.gain.linearRampToValueAtTime(vol * 1.4, t + dur * 0.45);
     g.gain.linearRampToValueAtTime(0, t + dur);
     f.connect(g).connect(this.out);
     for (const n of notes) {
       for (const det of [-9, 0, 9]) {
         const o = this.ctx.createOscillator();
-        o.type = 'sawtooth';
+        o.type = 'triangle';
         o.frequency.value = midi(n);
         o.detune.value = det;
         o.connect(f);

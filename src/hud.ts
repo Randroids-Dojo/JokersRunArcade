@@ -45,6 +45,9 @@ export class Hud {
   private visible = false;
   private bannerQ: BannerItem[] = [];
   private bannerEl: HTMLElement | null = null;
+  private bannerUp = false;
+  /** Marker label boxes drawn this frame (x0, y0, x1, y1). */
+  private labels: [number, number, number, number][] = [];
   private bannerT = 0;
   private radioQ: RadioItem[] = [];
   private radioCur: RadioItem | null = null;
@@ -148,6 +151,24 @@ export class Hud {
     this.bannerQ.push({ main, sub, style, dur });
   }
 
+  /** On phones, keep the banner between the score column (with its combo bar) and the radar,
+   *  shrinking the text if a long one or a camera cutout would make them meet. */
+  private fitBanner(el: HTMLElement) {
+    const w = window.innerWidth;
+    const scoreRight = $('tl').getBoundingClientRect().left + 140 + 8;
+    const radarLeft = $('bl').getBoundingClientRect().left - 8;
+    const half = Math.min(w / 2 - scoreRight, radarLeft - w / 2);
+    const main = el.querySelector<HTMLElement>('.main');
+    if (main) {
+      main.style.display = 'inline-block'; // layout width of the text itself, not the band
+      const tw = main.scrollWidth;
+      main.style.display = '';
+      const size = parseFloat(getComputedStyle(main).fontSize);
+      if (tw > half * 2) main.style.fontSize = `${Math.max(18, Math.floor((size * half * 2) / tw))}px`;
+    }
+    if (el.classList.contains('warning')) el.style.width = `${Math.min(w * 0.48, half * 2)}px`;
+  }
+
   clearBanners() {
     this.bannerQ.length = 0;
     this.bannerT = 0;
@@ -165,7 +186,8 @@ export class Hud {
       box.appendChild(d);
       setTimeout(() => d.remove(), 2700 + i * 70);
     });
-    while (box.children.length > 9) box.firstChild?.remove();
+    const max = document.body.classList.contains('touch') ? 4 : 9;
+    while (box.children.length > max) box.firstChild?.remove();
   }
 
   radio(who: string, text: string, priority = false) {
@@ -287,6 +309,12 @@ export class Hud {
       $('banner').appendChild(el);
       this.bannerEl = el;
       this.bannerT = b.dur;
+      if (document.body.classList.contains('touch')) this.fitBanner(el);
+    }
+    // On phones the banner sits over the timer and ace panel, which step aside meanwhile.
+    if (!!this.bannerEl !== this.bannerUp) {
+      this.bannerUp = !!this.bannerEl;
+      $('hud').classList.toggle('banner-up', this.bannerUp);
     }
     // Radio.
     if (this.radioCur) {
@@ -380,6 +408,7 @@ export class Hud {
     const ctx = this.ctx;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, this.w, this.h);
+    this.labels.length = 0;
     if (!this.visible || g.cinematic || !g.player.alive) {
       this.drawRadar(g);
       return;
@@ -416,6 +445,7 @@ export class Hud {
     if (!bore.behind) this.drawBoresight(bore.x, bore.y);
 
     // Gun lead pipper.
+    let fire: { x: number; y: number } | null = null;
     if (t && tDist < 1600) {
       const tf = tDist / (GUN.speed + p.speed);
       const lead = this.project(_v.copy(t.pos).addScaledVector(t.vel, tf), cam);
@@ -428,10 +458,7 @@ export class Hud {
         ctx.stroke();
         ctx.fillStyle = ctx.strokeStyle;
         ctx.fillRect(lead.x - 1.5, lead.y - 1.5, 3, 3);
-        if (onTarget) {
-          ctx.font = '700 11px "Chakra Petch", sans-serif';
-          ctx.fillText('FIRE', lead.x + 14, lead.y);
-        }
+        if (onTarget) fire = { x: lead.x, y: lead.y };
         ctx.lineWidth = 1.5;
       }
     }
@@ -441,6 +468,7 @@ export class Hud {
       if (a === p || !a.targetable) continue;
       this.drawMarker(g, a, cam, focal, a === t);
     }
+    if (fire) this.drawFire(fire.x, fire.y);
     // Checkpoint.
     const cp = g.mission.activeCheckpoint();
     if (cp) {
@@ -612,6 +640,46 @@ export class Hud {
     ctx.textAlign = 'left';
   }
 
+  /** Remembers where a marker label went, so the FIRE cue can keep clear of it. */
+  private note(text: string, x: number, y: number) {
+    const w = this.ctx.measureText(text).width;
+    const align = this.ctx.textAlign;
+    const x0 = align === 'center' ? x - w / 2 : align === 'right' || align === 'end' ? x - w : x;
+    this.labels.push([x0, y - 7, x0 + w, y + 7]);
+  }
+
+  /** A y for a label near `y` that doesn't land on one already drawn: steps by `step` up to three times. */
+  private freeY(text: string, x: number, y: number, step: number) {
+    const w = this.ctx.measureText(text).width;
+    const align = this.ctx.textAlign;
+    const x0 = align === 'center' ? x - w / 2 : align === 'right' || align === 'end' ? x - w : x;
+    for (let i = 0; i < 3; i++) {
+      const yy = y + step * i;
+      if (!this.labels.some((r) => x0 < r[2] && x0 + w > r[0] && yy - 7 < r[3] && yy + 7 > r[1])) return yy;
+    }
+    return y;
+  }
+
+  /** FIRE beside the gun pipper: right of it unless a target label is there, then left, below, above. */
+  private drawFire(x: number, y: number) {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.font = '700 11px "Chakra Petch", sans-serif';
+    ctx.fillStyle = C.white;
+    const w = ctx.measureText('FIRE').width;
+    const spots: [number, number, CanvasTextAlign, number][] = [
+      [x + 14, y, 'left', x + 14],
+      [x - 14, y, 'right', x - 14 - w],
+      [x, y + 20, 'center', x - w / 2],
+      [x, y - 20, 'center', x - w / 2],
+    ];
+    const clear = (s: (typeof spots)[number]) => !this.labels.some((r) => s[3] < r[2] && s[3] + w > r[0] && s[1] - 7 < r[3] && s[1] + 7 > r[1]);
+    const [fx, fy, align] = spots.find(clear) ?? spots[0];
+    ctx.textAlign = align;
+    ctx.fillText('FIRE', fx, fy);
+    ctx.restore();
+  }
+
   private drawMarker(g: Game, a: Aircraft, cam: THREE.Camera, focal: number, selected: boolean) {
     const ctx = this.ctx;
     const p = g.player;
@@ -629,7 +697,9 @@ export class Hud {
       ctx.stroke();
       ctx.font = '600 10px "Chakra Petch", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(a.callsign, s.x, s.y - 20);
+      const cy = this.freeY(a.callsign, s.x, s.y - 20, -11);
+      ctx.fillText(a.callsign, s.x, cy);
+      this.note(a.callsign, s.x, cy);
       ctx.textAlign = 'left';
       return;
     }
@@ -659,9 +729,15 @@ export class Hud {
     const important = selected || a.missionTarget || a.kind === 'ace';
     if (selected || (important && dist < 5000) || dist < 1300) {
       const tag = a.missionTarget ? `TGT ${a.label}` : a.label;
-      ctx.fillText(tag, s.x, s.y - size - 9);
+      // Aircraft in formation would print their names over each other: stack them upward.
+      const ty = this.freeY(tag, s.x, s.y - size - 9, -12);
+      ctx.fillText(tag, s.x, ty);
+      this.note(tag, s.x, ty);
     }
-    if (selected || important) ctx.fillText(fmtDist(dist), s.x, s.y + size + 10);
+    if (selected || important) {
+      ctx.fillText(fmtDist(dist), s.x, s.y + size + 10);
+      this.note(fmtDist(dist), s.x, s.y + size + 10);
+    }
     let barY = s.y + size + 20;
     const detail = selected || dist < 3000;
     if ((a.kind === 'scout' || a.kind === 'ace') && detail) {
@@ -674,6 +750,7 @@ export class Hud {
       ctx.font = '600 9px "Chakra Petch", sans-serif';
       ctx.fillStyle = paused ? C.white : C.gold;
       ctx.fillText(paused ? 'JAMMED' : `UPLOAD ${Math.round(a.upload * 100)}%`, s.x, barY + 10);
+      this.note(paused ? 'JAMMED' : `UPLOAD ${Math.round(a.upload * 100)}%`, s.x, barY + 10);
     }
     if (selected) {
       ctx.textAlign = 'left';
@@ -681,6 +758,7 @@ export class Hud {
         ctx.fillStyle = C.gold;
         ctx.font = '700 11px "Chakra Petch", sans-serif';
         ctx.fillText('NO LOCK', s.x + size + 8, s.y);
+        this.note('NO LOCK', s.x + size + 8, s.y);
       } else if (g.locked) {
         const pulse = 1 + 0.08 * Math.sin(g.realTime * 20);
         const d = (size + 10) * pulse;
@@ -696,6 +774,7 @@ export class Hud {
         ctx.fillStyle = C.hostile;
         ctx.font = '700 12px "Chakra Petch", sans-serif';
         ctx.fillText('LOCK', s.x + d + 6, s.y);
+        this.note('LOCK', s.x + d + 6, s.y);
       } else if (g.lockProgress > 0) {
         const d = size + 10 + (1 - g.lockProgress) * 70;
         ctx.strokeStyle = C.hud;

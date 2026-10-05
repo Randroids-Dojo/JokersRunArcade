@@ -1,11 +1,11 @@
 # Joker's Run Android release handoff
 
-Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. Submission is held for additional gameplay fixes requested by the publisher. Version 1.0.1/code 2 is a tested pre-fix baseline.
+Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. The requested HUD/audio fixes from main61d28d828e87929c919436d31ff90cf901f5ea4f are integrated into version1.0.1/code2. Parent reviews the final candidate before Play submission.
 
 ## Identity and packaging
 
 - Package `app.toyboxes.jokersrun`; no prior Android identity existed in the source and the parent confirmed no existing Toyboxes Play app.
-- Version `1.0.1`, version code `2`, incorporates main's recorded-radio update `ea123d2386a6239b1502a9a5eebb297340258f19`. Code 1 is already uploaded to a saved Console draft and must be replaced before submission.
+- Version `1.0.1`, version code `2`, incorporates main's recorded-radio update `ea123d2386a6239b1502a9a5eebb297340258f19` and HUD/audio fixes `61d28d828e87929c919436d31ff90cf901f5ea4f`. Code 1 is already uploaded to a saved Console draft and must be replaced before submission.
 - Minimum API26, target/compile API36. JDK17, Gradle8.13 with pinned checksum, AGP8.12.2, build-tools36.0.0, AndroidX WebKit1.14.0.
 - Java Activity serves the complete bundled production game through WebViewAssetLoader's local HTTPS origin. No INTERNET permission; external requests/navigation are blocked. No bundled native `.so` libraries. Updates require an app release.
 - Adaptive icon uses parent-supplied original jet artwork padded for launcher masks. Store artwork belongs to the parent task.
@@ -55,7 +55,7 @@ Mission 01: launch from the carrier, master your flight controls, and stop enemy
 
 ## Remaining release gates
 
-1. The publisher confirmed "That plus some fixes" are coming after recorded radio. Await those commits, integrate/rebuild/retest them, and keep Android work on its draft PR until settled.
+1. The publisher's additional HUD/audio fixes are integrated. Run phone, left/right camera-cutout and desktop overlap audits plus native/mission checks, recheck latest main, and hand the signed candidate to the parent for review. Keep the PR draft until the release decision.
 2. Check physical phone/tablet touch, tilt, haptics/audio. Paid-generation confirmation is recorded above.
 3. Parent verifies final public policy/listing, app access, rating, Data safety, pricing/distribution.
 4. Replace saved code 1 with signed code 2+; inspect Play processing/pre-launch results and account access/testing requirements. Saved drafts/build success do not establish publication.

@@ -312,6 +312,7 @@ export class TouchControls {
     const orders = document.getElementById('t-orders')!;
     this.set('orders', v.orders ?? '', () => {
       orders.classList.toggle('show', !!v.orders);
+      document.body.classList.toggle('orders', !!v.orders);
       (['order1', 'order2', 'order3'] as Btn[]).forEach((b, i) =>
         this.buttons.get(b)!.classList.toggle('on', v.orders === ['cover', 'scouts', 'split'][i]),
       );
