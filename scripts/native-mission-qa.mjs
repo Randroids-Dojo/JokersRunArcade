@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 const serial = process.env.ANDROID_SERIAL ?? 'emulator-5554';
+const speed = Number(process.env.SPEED ?? 1);
 const adbPath = path.join(process.env.ANDROID_HOME, 'platform-tools', 'adb.exe');
 const adb = (...args) => execFileSync(adbPath, ['-s', serial, ...args], { encoding:'utf8', timeout:20000 }).trim();
 const out = 'release-artifacts/native';
@@ -22,10 +23,10 @@ const launch = await page.locator('#btn-launch').boundingBox();
 await cdp.send('Input.dispatchTouchEvent', { type:'touchStart', touchPoints:[{ id:1, x:launch.x+launch.width/2, y:launch.y+launch.height/2, radiusX:8, radiusY:8, force:1 }] });
 await page.waitForTimeout(70);
 await cdp.send('Input.dispatchTouchEvent', { type:'touchEnd', touchPoints:[{ id:1, x:launch.x+launch.width/2, y:launch.y+launch.height/2 }] });
-await page.evaluate(() => { if (__joker.game.settings.assist) __joker.game.toggleSetting('assist'); __joker.bot(true); __joker.speed(2); });
+await page.evaluate(speed => { if (__joker.game.settings.assist) __joker.game.toggleSetting('assist'); __joker.bot(true); __joker.speed(speed); }, speed);
 const began = Date.now();
 try {
-  while (Date.now() - began < 300000) {
+  while (Date.now() - began < 420000) {
     await page.waitForTimeout(1000);
     const state = await page.evaluate(() => __joker.state());
     states.push(state);
@@ -43,6 +44,6 @@ try {
 } catch (error) { errors.push(error.stack ?? String(error)); }
 const last = states.at(-1);
 const godMode = await page.evaluate(() => __joker.game.god);
-writeFileSync(`${out}/native-mission-qa.json`, JSON.stringify({ environment:'API36 Android16 AOSP x86_64 emulator; signed debug APK; WebView133; real bot inputs; direct steering; simulation2x', completed:last?.state==='debrief', godMode, physicalDeviceTested:false, states, events, errors },null,2));
+writeFileSync(`${out}/native-mission-qa.json`, JSON.stringify({ environment:'API36 Android16 AOSP x86_64 emulator; signed debug APK; WebView133; real bot inputs; direct steering', simulationSpeed:speed, completed:last?.state==='debrief', godMode, physicalDeviceTested:false, states, events, errors },null,2));
 await browser.close();
 if (last?.state !== 'debrief' || errors.length || godMode) process.exitCode = 1;
