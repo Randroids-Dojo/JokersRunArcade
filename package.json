@@ -1,13 +1,16 @@
 {
   "name": "jokers-run-arcade",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 5190",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 5190",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:mobile": "node scripts/mobile.mjs",
+    "test:release": "node scripts/release-qa.mjs",
+    "test:mission": "node scripts/mission-qa.mjs"
   },
   "dependencies": {
     "three": "^0.186.1"

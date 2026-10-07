@@ -1,11 +1,12 @@
 // Phone playtest: emulated touch device, real multi-touch via CDP.
 // node scripts/mobile.mjs   (dev server on :5190)
 import { chromium } from 'playwright-core';
+import { writeFileSync } from 'node:fs';
 
 const base = process.env.URL ?? 'http://localhost:5190/';
 const W = 844;
 const H = 390;
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=metal', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: [...(process.platform === 'darwin' ? ['--use-angle=metal'] : []), '--ignore-gpu-blocklist'] });
 const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
 const page = await context.newPage();
 const errors = [];
@@ -248,4 +249,6 @@ check('render scale', true, (await T()).renderScale);
 
 console.log(`\n${results.filter((r) => r.ok).length}/${results.length} checks passed`);
 if (errors.length) console.log('PAGE ERRORS:\n' + errors.join('\n'));
+writeFileSync('artifacts/mobile-results.json', JSON.stringify({ results, errors }, null, 2));
+if (results.some((r) => !r.ok) || errors.length) process.exitCode = 1;
 await browser.close();

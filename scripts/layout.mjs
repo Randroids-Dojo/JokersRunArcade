@@ -3,11 +3,12 @@
 // text, panel and touch control is measured; any two that overlap are reported once per
 // pair with the phase they first collided in.
 import { chromium } from 'playwright-core';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
 const cp = process.argv[2] ?? 'launch';
 const speed = Number(process.argv[3] ?? 2);
 const maxSec = Number(process.argv[4] ?? 300);
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=metal', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: [...(process.platform === 'darwin' ? ['--use-angle=metal'] : []), '--ignore-gpu-blocklist'] });
 // DESKTOP=1 checks the keyboard-and-mouse layout in a 1440x860 window instead.
 const ctx = await browser.newContext(
   process.env.DESKTOP
@@ -15,13 +16,18 @@ const ctx = await browser.newContext(
     : { viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
 );
 const page = await ctx.newPage();
+const errors = [];
+page.on('pageerror', e => errors.push(e.message));
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
 // CUTOUT=left|right adds a 58 px safe-area inset, like a landscape phone's camera cutout.
 if (process.env.CUTOUT) {
   const cdp = await ctx.newCDPSession(page);
   const side = process.env.CUTOUT === 'right' ? 'right' : 'left';
   await cdp.send('Emulation.setSafeAreaInsetsOverride', { insets: { left: 0, right: 0, top: 0, bottom: 0, [side]: 58 } });
 }
-await page.goto('http://localhost:5190/?debug&bot&god');
+const base = process.env.URL ?? 'http://localhost:5190/';
+await page.goto(`${base}?debug&bot&god`);
 await page.waitForTimeout(1500);
 await page.evaluate(`__joker.speed(${speed})`);
 // Assisted steering levels the jet whenever no thumb is on the stick, which would override the bot.
@@ -84,12 +90,14 @@ const sample = () => page.evaluate((items) => {
 }, ITEMS);
 
 const seen = new Map();
+const phases = new Set();
 const t0 = Date.now();
 let state = '';
 while ((Date.now() - t0) / 1000 < maxSec && state !== 'debrief' && state !== 'failed') {
   await page.waitForTimeout(200);
   const s = await page.evaluate('__joker.state()');
   state = s.state;
+  phases.add(s.phase || s.state);
   for (const p of await sample()) {
     const key = [p.a.replace(/#\d+$/, ''), p.b.replace(/#\d+$/, '')].sort().join('  x  ');
     if (!seen.has(key)) {
@@ -100,4 +108,8 @@ while ((Date.now() - t0) / 1000 < maxSec && state !== 'debrief' && state !== 'fa
 }
 console.log(`END ${state}: ${seen.size} overlapping pairs`);
 for (const [k, n] of [...seen].sort((a, b) => b[1] - a[1])) console.log(String(n).padStart(5), k);
+mkdirSync('release-artifacts', { recursive: true });
+const scenario = process.env.DESKTOP ? 'desktop' : process.env.CUTOUT === 'left' ? 'cutout-left' : process.env.CUTOUT === 'right' ? 'cutout-right' : 'phone';
+writeFileSync(`release-artifacts/layout-audit-${scenario}.json`, JSON.stringify({ scenario, productionUrl: base, state, phases: [...phases], overlaps: [...seen], errors, godMode: true, simulationSpeed: speed, limitation: 'Measures settled DOM text/panel/control boxes; canvas marker labels still require visual inspection.' }, null, 2));
 await browser.close();
+if (seen.size || errors.length || state !== 'debrief') process.exitCode = 1;

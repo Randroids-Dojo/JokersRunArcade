@@ -1,0 +1,7 @@
+Joker's Run third-party notices
+
+Three.js, Copyright 2010-2026 three.js authors: MIT License. See three-MIT.txt.
+Chakra Petch, Copyright 2018 The Chakra Petch Project Authors: SIL Open Font License 1.1. See ../fonts/OFL.txt. Fonts are bundled unmodified from https://github.com/google/fonts/tree/main/ofl/chakrapetch.
+AndroidX WebKit and its AndroidX dependencies, Copyright The Android Open Source Project: Apache License 2.0. See AndroidX-Apache-2.0.txt.
+
+Aircraft, terrain, ocean, sky, effects, music and sound are procedural game source content. The Android launcher artwork was created as original artwork for this release and supplied through the parent release task. No branded third-party aircraft imagery, recordings, or gameplay screenshots were imported.

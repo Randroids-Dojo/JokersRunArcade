@@ -413,6 +413,13 @@ export class Hud {
       this.drawRadar(g);
       return;
     }
+    // Canvas text must also keep clear of the HTML objective, timer and ace panel.
+    // Reserve their actual layout so the rule works on phones and desktop alike.
+    this.labels.push([this.w / 2 - 164, 0, this.w / 2 + 164, 44]);
+    for (const id of ['tc', 'boss']) {
+      const r = $(id).getBoundingClientRect();
+      if (r.width && r.height) this.labels.push([r.left - 5, r.top - 5, r.right + 5, r.bottom + 5]);
+    }
     const cam = g.rig.camera;
     const p = g.player;
     const W = this.w;
@@ -485,7 +492,10 @@ export class Hud {
         ctx.closePath();
         ctx.stroke();
         ctx.textAlign = 'center';
-        ctx.fillText(`${cp.label} ${fmtDist(d)}`, s.x, s.y + 24);
+        const label = `${cp.label} ${fmtDist(d)}`;
+        const y = this.freeY(label, s.x, s.y + 24, 16);
+        ctx.fillText(label, s.x, y);
+        this.note(label, s.x, y);
         ctx.textAlign = 'left';
       } else this.edgeArrow(s, C.gold, `${cp.label} ${fmtDist(d)}`);
     }
@@ -532,9 +542,14 @@ export class Hud {
         ctx.textAlign = 'center';
         const close = incoming.some((m) => m.pos.distanceTo(p.pos) < 700);
         const short = H < 520;
-        ctx.fillText(close ? 'MISSILE — BREAK!' : 'MISSILE', W / 2, short ? H * 0.42 : H / 2 - 160);
+        const warning = close ? 'MISSILE - BREAK!' : 'MISSILE';
+        const wy = this.freeY(warning, W / 2, short ? H * 0.42 : H / 2 - 160, 30, 15);
+        ctx.fillText(warning, W / 2, wy);
         ctx.font = '600 12px "Chakra Petch", sans-serif';
-        if (close && !g.input.usingTouch) ctx.fillText('BARREL ROLL: DOUBLE-TAP A / D', W / 2, short ? H * 0.42 + 22 : H / 2 - 138);
+        if (close && !g.input.usingTouch) {
+          const hint = 'BARREL ROLL: DOUBLE-TAP A / D';
+          ctx.fillText(hint, W / 2, this.freeY(hint, W / 2, wy + 22, 16));
+        }
         ctx.textAlign = 'left';
       }
     }
@@ -648,14 +663,16 @@ export class Hud {
     this.labels.push([x0, y - 7, x0 + w, y + 7]);
   }
 
-  /** A y for a label near `y` that doesn't land on one already drawn: steps by `step` up to three times. */
-  private freeY(text: string, x: number, y: number, step: number) {
+  /** Search both directions near the contact, keeping text inside the screen and clear of HUD panels. */
+  private freeY(text: string, x: number, y: number, step: number, halfHeight = 7) {
     const w = this.ctx.measureText(text).width;
     const align = this.ctx.textAlign;
     const x0 = align === 'center' ? x - w / 2 : align === 'right' || align === 'end' ? x - w : x;
-    for (let i = 0; i < 3; i++) {
-      const yy = y + step * i;
-      if (!this.labels.some((r) => x0 < r[2] && x0 + w > r[0] && yy - 7 < r[3] && yy + 7 > r[1])) return yy;
+    for (let i = 0; i < 25; i++) {
+      const offset = i === 0 ? 0 : Math.ceil(i / 2) * (i % 2 ? step : -step);
+      const yy = y + offset;
+      if (yy < halfHeight || yy > this.h - halfHeight) continue;
+      if (!this.labels.some((r) => x0 < r[2] && x0 + w > r[0] && yy - halfHeight < r[3] && yy + halfHeight > r[1])) return yy;
     }
     return y;
   }
@@ -749,8 +766,9 @@ export class Hud {
       this.note(tag, s.x, ty);
     }
     if (selected || important) {
-      ctx.fillText(fmtDist(dist), s.x, s.y + size + 10);
-      this.note(fmtDist(dist), s.x, s.y + size + 10);
+      const dy = this.freeY(fmtDist(dist), s.x, s.y + size + 10, 12);
+      ctx.fillText(fmtDist(dist), s.x, dy);
+      this.note(fmtDist(dist), s.x, dy);
     }
     let barY = s.y + size + 20;
     const detail = selected || dist < 3000;
@@ -829,7 +847,12 @@ export class Hud {
     const rx = this.w * 0.42;
     const ry = this.h * 0.38;
     const ex = cx + Math.cos(ang) * rx;
-    const ey = cy + Math.sin(ang) * ry;
+    let ey = cy + Math.sin(ang) * ry;
+    ctx.font = '600 11px "Chakra Petch", sans-serif';
+    ctx.textAlign = 'center';
+    const lx = ex - Math.cos(ang) * 30;
+    const ly = this.freeY(label, lx, ey - Math.sin(ang) * 22, 16, 28);
+    ey = ly + Math.sin(ang) * 22;
     ctx.save();
     ctx.translate(ex, ey);
     ctx.rotate(ang);
@@ -845,7 +868,8 @@ export class Hud {
     ctx.fillStyle = col;
     ctx.font = '600 11px "Chakra Petch", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(label, ex - Math.cos(ang) * 30, ey - Math.sin(ang) * 22);
+    ctx.fillText(label, lx, ly);
+    this.note(label, lx, ly);
     ctx.textAlign = 'left';
   }
 

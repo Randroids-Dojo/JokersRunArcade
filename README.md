@@ -136,4 +136,18 @@ To re-roll a take, give its line a new `seed`. To recast a speaker, run `design 
 - Difficulty was tuned against the bot, which aims perfectly and flies poorly. It clears the mission in about 2.5 minutes of game time. The 8–10 minute target for a human first run is an estimate, not measured.
 - Sound was not judged by ear. Every radio clip was transcribed with Whisper and matches its caption; the voices were picked by measured pitch, brightness, roughness and pace, and the delivery of each take was not judged by ear. Radio text always appears on screen.
 - Touch controls were verified in Chrome's phone emulation with real multi-touch events, not on a physical phone. Tilt steering was checked with synthetic orientation events against the W3C angle conventions; the feel on real hardware, iOS Safari behaviour, and haptics (Android only; iOS Safari has no vibration API) still need a device.
-- The fonts load from Google Fonts with a system fallback.
+- Chakra Petch fonts are bundled locally under the SIL Open Font License; the game needs no font network requests. Radio speech uses local system voices only and always has captions.
+
+## Android / Google Play
+
+The Android app bundles the production game for offline play in a native WebView. It does not load the website. Package `app.toyboxes.jokersrun`, version `1.0.0` / code `1`, minimum Android 8 / API 26, target Android 16 / API 36. The only permission is vibration for optional haptics. No ads, in-app purchases, accounts, analytics, network permission, or data uploads.
+
+Build with JDK 17, Android SDK platform/build-tools 36, and the checked-in Gradle wrapper:
+
+```powershell
+npm ci
+npm run build
+.\android\gradlew.bat -p android :app:bundleRelease :app:assembleRelease :app:assembleDebug :app:lintRelease
+```
+
+Outputs are unsigned by default. See [Android release handoff](docs/ANDROID-RELEASE.md) for signing, native QA, privacy disclosures and remaining release gates. [Privacy policy](public/privacy.html) is bundled in the title and pause menus and available at `/privacy.html` on web deployments. Source-native tests use installed Chrome: `npm run test:mobile` against port 5190; `npm run test:release` and `npm run test:mission` against the production preview on port 5191.

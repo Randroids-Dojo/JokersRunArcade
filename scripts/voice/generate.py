@@ -65,11 +65,11 @@ PEAK_DB = -1.0
 
 
 def load(path):
-    return json.loads(path.read_text())
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def save(path, data):
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def slug(s):
@@ -80,7 +80,7 @@ def api_key():
     key = os.environ.get("ELEVENLABS_API_KEY", "")
     env = ROOT.parent / "ChannelKnowledgeBase" / ".env"
     if not key and env.exists():
-        for line in env.read_text().splitlines():
+        for line in env.read_text(encoding="utf-8").splitlines():
             if line.startswith("ELEVENLABS_API_KEY="):
                 key = line.split("=", 1)[1].strip().strip("\"'")
     if not key:
@@ -116,7 +116,7 @@ def source_lines():
     arg = rf"{LIT}|\[[^\]]*\](?:\[[^\]]*\])?|[A-Za-z_]\w*\[[^\]]*\]"
     found = set()
     for f in sorted((ROOT / "src").glob("*.ts")):
-        src = f.read_text()
+        src = f.read_text(encoding="utf-8")
         for who, text in re.findall(rf"\bradio\(\s*({arg})\s*,\s*({arg})", src):
             def values(a):
                 if re.match(r"[A-Za-z_]", a):  # table[key]: the string values of `table`

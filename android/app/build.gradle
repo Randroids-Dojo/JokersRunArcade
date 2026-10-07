@@ -1,0 +1,39 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'app.toyboxes.jokersrun'
+    compileSdk 36
+    buildToolsVersion '36.0.0'
+    defaultConfig {
+        applicationId 'app.toyboxes.jokersrun'
+        minSdk 26
+        targetSdk 36
+        versionCode 3
+        versionName '1.0.2'
+    }
+    buildFeatures { buildConfig true }
+    // Intentionally unsigned until the publisher approves its signing workflow.
+    buildTypes {
+        debug { signingConfig null }
+        release {
+            signingConfig null
+            minifyEnabled false
+        }
+    }
+    sourceSets { main.assets.srcDirs = ['../../dist'] }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint { abortOnError true }
+}
+
+tasks.named('preBuild').configure {
+    doFirst {
+        if (!file('../../dist/index.html').exists()) {
+            throw new GradleException('Run npm ci && npm run build at the repository root first.')
+        }
+    }
+}
+
+dependencies { implementation 'androidx.webkit:webkit:1.14.0' }

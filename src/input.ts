@@ -99,6 +99,10 @@ export class Input implements ControlState {
   releaseAll() {
     this.keys.clear();
     this.mouse.clear();
+    this.pressedQ.clear();
+    this.mousePressed.clear();
+    this.pendingRoll = 0;
+    this.lastTap = {};
     this.touch?.releaseAll();
   }
 
