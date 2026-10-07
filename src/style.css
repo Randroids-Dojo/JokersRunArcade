@@ -1056,6 +1056,9 @@ body.touch .touch-only {
 body.touch .toggles .touch-only {
   display: inline-block !important;
 }
+body.touch .controls-card {
+  display: none;
+}
 
 #touch {
   position: absolute;
@@ -1672,6 +1675,9 @@ body.touch #area-warn {
   #screen-title {
     padding: 4vh 5vw;
     grid-template-columns: 1fr;
+  }
+  .controls-card {
+    display: none;
   }
   .title-wrap h1 {
     font-size: clamp(44px, 17vh, 120px);
