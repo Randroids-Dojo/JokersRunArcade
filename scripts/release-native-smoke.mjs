@@ -36,10 +36,10 @@ try {
   assert.equal(await page.evaluate(()=>typeof window.__joker),'undefined');
   assert.ok(await visible('screen-title'));
   const pkg=adb('shell','dumpsys','package','app.toyboxes.jokersrun');
-  assert.match(pkg,/versionCode=2/);assert.match(pkg,/versionName=1\.0\.1/);
+  assert.match(pkg,/versionCode=3/);assert.match(pkg,/versionName=1\.0\.2/);
   assert.ok(!/flags=\[[^\]]*DEBUGGABLE/.test(pkg));
   assert.equal(adb('shell','settings','get','global','wifi_on'),'0');
-  check('offline release title, code2, non-debuggable application and absent game debug hook');
+  check('offline release title, code3, non-debuggable application and absent game debug hook');
   capture('04-release-title');
   await tap('#screen-title [data-privacy]');
   await page.waitForFunction(()=>document.getElementById('privacy-dialog').open);
@@ -87,6 +87,6 @@ finally {
   adb('shell','wm','size','reset');adb('shell','wm','density','reset');
   adb('shell','settings','put','system','accelerometer_rotation','1');
   adb('shell','settings','put','system','user_rotation','0');
-  writeFileSync(`${out}/release-smoke.json`,JSON.stringify({environment:'API36 Android16 AOSP x86_64 emulator, Pixel6 profile, userdebug OS, signed release APK1.0.1/code2',method:'actual adb touch/Back/Home, screenshots; read-only page metadata through OS-debug WebView socket; portrait target reattached after expected density Activity recreation',apkSha256:createHash('sha256').update(readFileSync('release-artifacts/jokers-run-1.0.1-upload-signed.apk')).digest('hex'),checks,errors,priorHarnessErrors:prior?.errors??[],screenshots,physicalDeviceTested:false,restoredDisplay:'1080x2400 density420, accelerometer rotation1, user rotation0'},null,2));
+  writeFileSync(`${out}/release-smoke.json`,JSON.stringify({environment:'API36 Android16 AOSP x86_64 emulator, Pixel6 profile, userdebug OS, signed release APK1.0.2/code3',method:'actual adb touch/Back/Home, screenshots; read-only page metadata through OS-debug WebView socket; portrait target reattached after expected density Activity recreation',apkSha256:createHash('sha256').update(readFileSync('release-artifacts/jokers-run-1.0.2-upload-signed.apk')).digest('hex'),checks,errors,priorHarnessErrors:prior?.errors??[],screenshots,physicalDeviceTested:false,restoredDisplay:'1080x2400 density420, accelerometer rotation1, user rotation0'},null,2));
   await browser.close().catch(()=>{});
 }

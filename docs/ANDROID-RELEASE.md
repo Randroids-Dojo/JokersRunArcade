@@ -1,5 +1,11 @@
 # Joker's Run Android release handoff
 
+## 2026-10-07 update: 1.0.2 / code 3
+
+This candidate includes the wide-landscape touch title fix from the web draft PR while retaining the offline Android host and all prior release changes. Package `app.toyboxes.jokersrun`, minimum API 26, and target API 36 are unchanged. The previous 1.0.1 / code 2 bundle remains the installed test baseline; code 3 is required for the next Play upload.
+
+Build `dist/` from this branch, then create the unsigned bundle and APK with `android/gradlew -p android bundleRelease assembleRelease lintRelease`. The existing upload identity is retained only on the publisher's authorized Windows PC. Sign with the existing `scripts/sign-android.ps1 -Kind upload` workflow there; do not create or transfer keys. The parent task handles Play submission after signing, review, and device checks.
+
 Prepared 2026-10-05 for Randroid LLC / Toyboxes. The Play Console parent task owns pricing, listing and submission. The requested HUD/audio fixes from main61d28d828e87929c919436d31ff90cf901f5ea4f and FIRE/score-popup fix4c0822e151ba791fb3aaf04ae26227a75ea2a2b9 are integrated into version1.0.1/code2. Parent reviews the final candidate before Play submission.
 
 ## Identity and packaging
