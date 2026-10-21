@@ -25,6 +25,9 @@ xcodebuild -project apple/JokersRun.xcodeproj -scheme JokersRun \
 ```
 
 Generated web copies, plists, Xcode projects, and build products stay out of Git.
+Run `bash apple/ci_scripts/package_device_tests.sh` to create an unsigned device
+IPA, XCTest UI runner ZIP, and checksums under `apple/build-device-tests`. A
+device provider must re-sign them; they are not App Store or TestFlight packages.
 Signing is deliberately not assigned to the existing Individual membership.
 After Apple confirms Randroid LLC, select the verified organization team in
 Xcode, archive, validate, and upload through its App Store Connect team.
