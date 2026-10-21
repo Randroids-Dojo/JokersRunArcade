@@ -1,0 +1,63 @@
+name: JokersRun
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0.2"
+    CURRENT_PROJECT_VERSION: 1
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: YES
+targets:
+  JokersRun:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+      - Assets.xcassets
+      - path: Game
+        type: folder
+      - path: PrivacyInfo.xcprivacy
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.toyboxes.jokersrun
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: Joker's Run
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UIStatusBarHidden: true
+        UIRequiresFullScreen: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Game
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSMotionUsageDescription: Optional tilt steering uses motion only on this device to control your aircraft.
+        ITSAppUsesNonExemptEncryption: false
+  JokersRunUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: UITests
+    dependencies: [{target: JokersRun}]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.toyboxes.jokersrun.uitests
+schemes:
+  JokersRun:
+    build:
+      targets:
+        JokersRun: all
+    test:
+      targets: [JokersRunUITests]

@@ -151,3 +151,13 @@ npm run build
 ```
 
 Outputs are unsigned by default. See [Android release handoff](docs/ANDROID-RELEASE.md) for signing, native QA, privacy disclosures and remaining release gates. [Privacy policy](public/privacy.html) is bundled in the title and pause menus and available at `/privacy.html` on web deployments. Source-native tests use installed Chrome: `npm run test:mobile` against port 5190; `npm run test:release` and `npm run test:mission` against the production preview on port 5191.
+
+
+## iPhone and iPad
+
+The Apple host bundles the complete production game for offline play and adds
+native lifecycle pause, local haptics and optional motion permission. Generate
+its Xcode project with `node scripts/build-apple.mjs` after `npm ci`. See
+[Apple release preparation](docs/APPLE-RELEASE.md) for unsigned builds, simulator
+checks and the remaining organization/device release gates. This does not mean
+the game is already published on Apple's store.
