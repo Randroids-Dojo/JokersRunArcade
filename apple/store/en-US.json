@@ -1,0 +1,23 @@
+{
+  "state": "prepared; not entered in App Store Connect",
+  "name": "Joker's Run",
+  "subtitle": "Offline arcade air combat",
+  "keywords": "jet,flight,dogfight,arcade,offline,aircraft,missile,carrier,canyon,pilot",
+  "description": "Launch from a carrier, chase enemy scouts through a canyon, take on an ace, and stop the final transmission before it reveals your fleet.\n\nJoker's Run is one replayable arcade flight mission. Fly with landscape touch controls, line up guns and missiles, boost, brake, barrel roll, and give your wingmen orders. Optional tilt steering lets you steer by moving your device.\n\nChain takedowns, build your Hot Start multiplier, and chase a better debrief rank. Checkpoint retries let you work on a tough section, while your best score and settings stay in the app's local storage.\n\nThe complete game and prerecorded radio dialogue are included for offline play. No account, ads, or in-app purchases. Captions remain available with radio voice off.",
+  "supportURL": "https://toyboxes.app/support/",
+  "marketingURL": "https://toyboxes.app/games/jokers-run/",
+  "privacyPolicyURL": "https://jokers-run-arcade.vercel.app/privacy.html",
+  "requestedUSPrice": "2.99",
+  "primaryCategory": "Games",
+  "gameSubcategory": "Action",
+  "reviewNotes": "No login required. Tap LAUNCH on the title screen, then tap to launch from the carrier. The left thumb steers; the right thumb aims and uses guns, missiles, boost, brake and evade. Touch a target to select it. Pause is available during play. Privacy Policy is available offline from the title and pause menus. Tilt steering is optional and asks for motion permission only when enabled. The whole game and radio audio are bundled locally.",
+  "remaining": [
+    "Organization membership and legal developer name",
+    "Signed archive and physical-device QA",
+    "Verified Apple screenshots",
+    "Age rating questionnaire",
+    "Privacy-policy deployment",
+    "Saved price and app privacy declarations",
+    "TestFlight and App Review"
+  ]
+}

@@ -11,5 +11,11 @@ android/local.properties
 *.jks
 *.keystore
 release-artifacts/
+apple/Game/
+apple/Generated/
+apple/*.xcodeproj/
+apple/build/
+apple/build-device/
+apple/build-device-tests/
 scripts/voice/auditions/
 __pycache__/
