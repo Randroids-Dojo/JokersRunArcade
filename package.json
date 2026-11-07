@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite --port 5190",
     "build": "tsc --noEmit && vite build",
+    "build:samsung": "tsc --noEmit && vite build --mode samsung && node scripts/samsung-package.mjs",
+    "package:samsung": "node scripts/samsung-package.mjs --sign",
+    "test:samsung": "node scripts/samsung-qa.mjs",
+    "test:samsung:mission": "node scripts/samsung-mission-qa.mjs",
     "preview": "vite preview --port 5190",
     "typecheck": "tsc --noEmit",
     "test:mobile": "node scripts/mobile.mjs",

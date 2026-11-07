@@ -21,6 +21,9 @@ export class Bot {
     if (!this.enabled || !g.controlsEnabled || !g.player.alive || g.state !== 'play') return;
     const p = g.player;
     const inp = g.input;
+    // This test pilot supplies direct aerobatic inputs, independent of the user's device.
+    inp.assist = false;
+    inp.turn = 0;
     const cp = g.mission.activeCheckpoint();
     const t = g.target && g.target.targetable ? g.target : null;
     let ringKind = '';

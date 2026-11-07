@@ -1,5 +1,10 @@
 node_modules/
 dist/
+dist-samsung/
+*.p12
+*.pwd
+*.wgt
+tv/.sign/
 .DS_Store
 artifacts/
 .vercel

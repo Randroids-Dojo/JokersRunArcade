@@ -128,6 +128,10 @@ export class Mission {
   private key(k: 'pitchUp' | 'left' | 'boost' | 'brake' | 'roll' | 'missile' | 'guns' | 'target'): string {
     const pad = this.g.input.usingPad;
     const inv = this.g.settings.invertPitch;
+    if (this.g.input.remote && !pad) {
+      const map = { pitchUp: inv ? '↓' : '↑', left: '←', boost: 'RETURN → BOOST', brake: 'RETURN → BRAKE', roll: '← ← / → →', missile: 'OK (lock first)', guns: 'HOLD OK', target: 'RETURN → NEXT TARGET' };
+      return `<kbd>${map[k]}</kbd>`;
+    }
     if (this.g.input.usingTouch) {
       const t: Record<string, string> = {
         pitchUp: inv ? 'STICK ↓' : 'STICK ↑',
@@ -411,17 +415,24 @@ export class Mission {
     const k = (x: Parameters<Mission['key']>[0]) => this.key(x);
     const step = `<span class="step">CHECKPOINT ${i + 1} / 5</span>`;
     const touch = this.g.input.usingTouch;
-    const assisted = touch && this.g.settings.assist;
+    const remote = !!this.g.input.remote && !this.g.input.usingPad;
+    const assisted = remote || (touch && this.g.settings.assist);
     const lines: Record<Ring['kind'], string> = {
       climb: `${step}<span class="big">CLIMB</span>Pull the nose up with ${k('pitchUp')}`,
       bank: assisted
         ? `${step}<span class="big">BANK LEFT</span>Hold ${k('left')} and the jet banks and turns for you`
         : `${step}<span class="big">BANK LEFT</span>Roll left ${k('left')} then pull ${k('pitchUp')} to carve the turn`,
-      boost: touch
+      boost: remote
+        ? `${step}<span class="big">BOOST</span>Press Return, choose Boost, then fly through the ring`
+        : touch
         ? `${step}<span class="big">BOOST</span>Tap ${k('boost')} to light the afterburner, tap again to cancel`
         : `${step}<span class="big">BOOST</span>Hold ${k('boost')} — pass through while boosting`,
-      brake: `${step}<span class="big">BRAKE</span>Hold ${k('brake')} — slow below 630 km/h and turn tight`,
-      roll: touch
+      brake: remote
+        ? `${step}<span class="big">BRAKE</span>Press Return, choose Brake, then turn through the ring`
+        : `${step}<span class="big">BRAKE</span>Hold ${k('brake')} — slow below 630 km/h and turn tight`,
+      roll: remote
+        ? `${step}<span class="big">ROLL</span>Double-tap ${k('left')} or <kbd>→</kbd> to evade through the ring`
+        : touch
         ? `${step}<span class="big">ROLL</span>Tap ${k('roll')} to barrel roll through`
         : `${step}<span class="big">ROLL</span>Double-tap ${this.g.input.usingPad ? '' : '<kbd>A</kbd> or <kbd>D</kbd>'}${this.g.input.usingPad ? k('roll') : ''} to barrel roll through`,
     };

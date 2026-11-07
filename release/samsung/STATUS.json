@@ -1,0 +1,57 @@
+{
+  "updatedAt": "2026-11-07T20:55:44.405153+00:00",
+  "state": "prepared_not_submitted",
+  "application": "Joker's Run",
+  "version": "1.0.0",
+  "platform": "Samsung Smart TV / Tizen Web",
+  "target": "Tizen 8.0+ (2024-2026)",
+  "branch": "feat/samsung-tv",
+  "baselineCommit": "0a64ad842303d55341bbb6da3729f6be3a5d062c",
+  "build": {
+    "completed": true,
+    "artifact": "/Users/randroid/Documents/Dev/JokersRunArcade/release-artifacts/samsung/JokersRun-1.0.0.unsigned.wgt",
+    "sha256": "dc4cd453d67660a99203a66e3058642ccf319b72e883501cc0b3a1a47a3883c4",
+    "signed": false,
+    "installable": false,
+    "samsungSdkValidation": "Not completed. Full SDK preflight required 15 GB, with 1.3 GB available. A minimal standalone CLI was staged; legacy Java/Eclipse dependencies prevented build-web validation."
+  },
+  "verification": {
+    "browserRuntimeChecks": 25,
+    "browserRuntimePassed": true,
+    "fullAutomatedMissionPassed": true,
+    "physicalSamsungTVPassed": false,
+    "physicalSamsungTVObservation": "sdb devices reported no connected Tizen device."
+  },
+  "submission": {
+    "sellerOfficeUrl": "https://seller.samsungapps.com/tv/",
+    "authenticated": false,
+    "sellerIdentityVerified": false,
+    "sellerOfficeAppId": null,
+    "packageUploaded": false,
+    "certificationRequested": false,
+    "approved": false,
+    "publiclyAvailable": false
+  },
+  "blockers": [
+    "Samsung publisher account sign-in is required; secure email-input requests received no answer before timeout.",
+    "Samsung-issued author/distributor signing profile is not available; the staged CLI profile list was empty.",
+    "A supported Samsung TV must be connected for signed-package installation and physical playtesting.",
+    "The mandatory Samsung UI Description PPTX template requires authentication; its content is prepared as Markdown but the PPTX is not completed."
+  ],
+  "prepared": [
+    "TV runtime source and dedicated build",
+    "Remote and gamepad controls, menus, lifecycle, privacy and exit",
+    "Unsigned offline WGT, content manifest and hash receipt",
+    "Samsung foreground/background icons, 24-bit legacy icon, square icon and four 1080p JPEG screenshots",
+    "English listing, content declarations, UI-description source and release instructions"
+  ],
+  "pending": [
+    "Sign in and verify the intended seller/group and any existing app identity",
+    "Complete SDK/signing setup with Samsung certificates",
+    "Install and playtest the signed package on a supported Samsung TV",
+    "Complete the required Samsung UI Description template",
+    "Deploy and read back the TV-inclusive public privacy policy",
+    "Set rating, pricing, territories and supported model groups in Seller Office",
+    "Upload, request certification, then reload and record the actual status"
+  ]
+}

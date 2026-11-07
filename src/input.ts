@@ -29,6 +29,19 @@ export interface ControlState {
 
 export const NEUTRAL: ControlState = { pitch: 0, roll: 0, yaw: 0, boost: false, brake: false, rollTap: 0, turn: 0, assist: false };
 
+export interface RemoteFlight {
+  pitch: number;
+  turn: number;
+  guns: boolean;
+  boost: boolean;
+  brake: boolean;
+  missile: boolean;
+  targetNext: boolean;
+  rollTap: number;
+  order: number;
+  skip: boolean;
+}
+
 export class Input implements ControlState {
   private keys = new Set<string>();
   private pressedQ = new Set<string>();
@@ -38,6 +51,7 @@ export class Input implements ControlState {
   private pendingRoll = 0;
   private padPrev: boolean[] = [];
   usingPad = false;
+  remote: RemoteFlight | null = null;
   touch: TouchControls | null = null;
   /** Use assisted steering for the touch stick and tilt. */
   touchAssist = true;
@@ -103,6 +117,7 @@ export class Input implements ControlState {
     this.mousePressed.clear();
     this.pendingRoll = 0;
     this.lastTap = {};
+    if (this.remote) Object.assign(this.remote, { pitch: 0, turn: 0, guns: false, boost: false, brake: false, missile: false, targetNext: false, rollTap: 0, order: 0, skip: false });
     this.touch?.releaseAll();
   }
 
@@ -195,6 +210,22 @@ export class Input implements ControlState {
     }
     this.turn = turn;
     this.assist = assist;
+    if (this.remote && !this.usingPad) {
+      pitch = this.remote.pitch;
+      roll = yaw = 0;
+      this.turn = this.remote.turn;
+      this.assist = true;
+      guns ||= this.remote.guns;
+      boost ||= this.remote.boost;
+      brake ||= this.remote.brake;
+      missile ||= this.remote.missile;
+      targetNext ||= this.remote.targetNext;
+      rollTap ||= this.remote.rollTap;
+      order ||= this.remote.order;
+      skip ||= this.remote.skip;
+      this.remote.missile = this.remote.targetNext = this.remote.skip = false;
+      this.remote.rollTap = this.remote.order = 0;
+    }
     this.taps = taps;
     this.pitch = pitch;
     this.roll = roll;

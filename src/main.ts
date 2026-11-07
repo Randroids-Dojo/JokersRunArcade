@@ -1,6 +1,9 @@
 import { Game, Settings } from './game';
 import type { CheckpointName } from './mission';
 import { Bot } from './debugbot';
+import { IS_TV } from './platform';
+import { TvEdition } from './tv';
+import './tv.css';
 
 const canvas = document.getElementById('gl') as HTMLCanvasElement;
 const game = new Game(canvas);
@@ -119,6 +122,8 @@ const unlock = () => game.audio.init();
 window.addEventListener('pointerdown', unlock);
 window.addEventListener('keydown', unlock);
 
+const tv = IS_TV ? new TvEdition(game, privacyDialog) : null;
+
 // ---------------------------------------------------------------- Debug hooks (?debug)
 
 const params = new URLSearchParams(location.search);
@@ -185,6 +190,7 @@ function frame(now: number) {
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
   last = now;
   game.input.poll();
+  tv?.update();
   bot.drive(game, dt * simSpeed);
   game.tick(dt * simSpeed);
   requestAnimationFrame(frame);

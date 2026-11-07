@@ -1,0 +1,72 @@
+/* The TV edition keeps the carrier, squadron typography, and instrument colors. */
+body.tv { cursor: none; }
+body.tv button { cursor: none; }
+body.tv button:disabled { opacity: .45; }
+body.tv #touch, body.tv #rotate, body.tv .touch-only { display: none !important; }
+body.tv button:focus { outline: .22vw solid #fff; outline-offset: .22vw; background-color: #ffd25a; color: #0a0d10; }
+body.tv .cta { clip-path: none; }
+body.tv #screen-title { grid-template-columns: 1.15fr .85fr; align-items: center; gap: 5vw; padding: 5vh 5vw; }
+body.tv .title-wrap h1 { font-size: 8.4vw; }
+body.tv .kicker { font-size: 1.2vw; }
+body.tv .tag { font-size: 1.4vw; max-width: none; margin-top: 2vh; }
+body.tv .cta { font-size: 1.65vw; padding: 1.5vh 2vw; margin-top: 2.5vh; }
+body.tv .cta span, body.tv .menu button span { font-size: 1.1vw; }
+body.tv .toggles { gap: 1vh .7vw; margin-top: 2.5vh; }
+body.tv .toggles button { padding: 1vh .8vw; font-size: 1.05vw; letter-spacing: .04em; }
+body.tv .best { font-size: 1.05vw; margin-top: 1.5vh; }
+body.tv .legal-link { font-size: 1.1vw; padding: .6vh 1vw; margin: 1.2vh 0 0; text-align: left; }
+body.tv .controls-card { display: block; width: auto; padding: 2.5vh 2vw; background: rgba(4, 8, 12, .85); }
+body.tv .controls-card h3 { font-size: 1.3vw; letter-spacing: .08em; margin: 1vh 0 1.5vh; }
+body.tv .controls-card dl { font-size: 1.2vw; gap: 1.4vh 1vw; }
+body.tv .controls-card p { font-size: 1.15vw; line-height: 1.5; margin: 2vh 0; color: #e3e6e9; }
+body.tv .controls-card .tv-menu-help { color: #ffd25a; }
+body.tv .panel { width: 64vw; max-height: 88vh; padding: 3vh 2.5vw; }
+body.tv .panel h2, body.tv .debrief h2 { font-size: 2.8vw; margin-bottom: 2vh; }
+body.tv #screen-pause .menu { grid-template-columns: 1fr 1fr; }
+body.tv .menu { gap: 1.2vh 1vw; }
+body.tv .menu button { font-size: 1.3vw; padding: 1.4vh 1vw; letter-spacing: .08em; }
+body.tv #screen-pause .toggles { display: grid; grid-template-columns: repeat(4, 1fr); }
+body.tv .tv-flight-actions h3 { font-size: 1.2vw; font-weight: 500; margin: 2.5vh 0 1.5vh; }
+body.tv .tv-command-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vh 1vw; }
+body.tv .tv-command-grid button { background: #17212b; border: 1px solid #a6ffd0; color: #fff; padding: 1.3vh .6vw; font-size: 1.15vw; }
+body.tv #fail-reason { font-size: 1.5vw; }
+body.tv .debrief { width: 64vw; }
+body.tv #deb-stats { font-size: 1.4vw; }
+body.tv #privacy-dialog { width: 74vw; height: 84vh; padding: 2vh 2vw; }
+body.tv #privacy-dialog button { font-size: 1.35vw; padding: 1vh 2vw; }
+.tv-privacy-copy { clear: both; height: calc(100% - 6vh); overflow-y: auto; font-size: 1.45vw; line-height: 1.6; color: #f5f2ea; }
+.tv-privacy-copy h1 { font-size: 2.4vw; }
+.tv-privacy-copy h2 { font-size: 1.7vw; }
+#tv-exit-dialog { width: 44vw; padding: 3vh 3vw; border: 2px solid #ffd25a; background: #0a0d10; color: #fff; }
+#tv-exit-dialog::backdrop { background: rgba(0, 0, 0, .8); }
+#tv-exit-dialog h2 { font-size: 2.3vw; }
+#tv-exit-dialog p { font-size: 1.5vw; }
+body.tv #tl { top: 5vh; left: 5vw; }
+body.tv #tr { top: 5vh; right: 5vw; max-width: 21vw; }
+body.tv #tc { top: 6vh; width: 46vw; }
+body.tv .lbl, body.tv #mission-tag, body.tv #timer-label { font-size: 1.05vw; }
+body.tv #score { font-size: 2.6vw; }
+body.tv #objective, body.tv #phase-tag { font-size: 1.3vw; }
+body.tv #timer-value { font-size: 2.8vw; }
+body.tv #subtimer, body.tv #wing-order, body.tv #scout-list { font-size: 1.1vw; }
+body.tv #bl { left: 5vw; bottom: 5vh; }
+body.tv #radar { width: 13vw; height: 13vw; }
+body.tv #br { right: 5vw; bottom: 8vh; width: 15vw; font-size: 1.3vw; }
+body.tv #gauge-l { left: 30vw; }
+body.tv #gauge-r { right: 30vw; }
+body.tv .gauge b { font-size: 2vw; }
+body.tv .gauge .unit, body.tv .lbl.small { font-size: .95vw; }
+body.tv #radio { width: 44vw; bottom: 10vh; padding: 1.2vh 1vw; }
+body.tv #radio-who { font-size: 1.1vw; }
+body.tv #radio-text { font-size: 1.5vw; }
+body.tv #prompt { width: max-content; max-width: 55vw; bottom: 25vh; font-size: 1.4vw; }
+body.tv #prompt .big { font-size: 2.2vw; }
+body.tv #prompt .step { font-size: 1.05vw; }
+body.tv #boss { top: 16vh; width: 32vw; }
+body.tv #boss-head, body.tv #boss-status, body.tv #boss-pressure-row { font-size: 1.1vw; }
+#tv-controls { position: absolute; bottom: 4vh; left: 22vw; right: 22vw; color: #f5f2ea; text-align: center; font-size: 1.05vw; line-height: 1.5; text-shadow: 0 1px 5px #000; pointer-events: none; }
+#tv-controls[hidden] { display: none; }
+body.tv.tv-pad [data-flight="boost"], body.tv.tv-pad [data-flight="brake"] { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  body.tv *, body.tv *::before, body.tv *::after { transition: none !important; }
+}
