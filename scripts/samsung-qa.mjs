@@ -86,6 +86,7 @@ try {
   await focus('#screen-title [data-privacy]');
   await key(13);
   assert.equal(await page.locator('#privacy-dialog').evaluate(el => el.open), true);
+  await page.screenshot({ path: `${out}/privacy.png` });
   await key(40);
   assert.ok(await page.locator('.tv-privacy-copy').evaluate(el => el.scrollTop) > 0);
   await key(10009);
@@ -215,6 +216,7 @@ try {
   await page.evaluate(() => __joker.game.toTitle());
   await key(10009);
   assert.equal(await page.locator('#tv-exit-dialog').evaluate(el => el.open), true);
+  await page.screenshot({ path: `${out}/exit-confirmation.png` });
   await key(10009);
   assert.equal(await page.locator('#tv-exit-dialog').evaluate(el => el.open), false);
   pass('Return on title offers exit confirmation; Return cancels it');

@@ -3,8 +3,9 @@
 ## Release identity and scope
 
 Version 1.0.0. Tizen package `JkRunTv001`, application ID `JkRunTv001.JokersRun`.
-These are independent of any Seller Office application ID. Confirm no existing
-Samsung release uses a different identity before the first upload.
+Seller Office app ID: `3202611050850`, created in the verified Randroid LLC
+business group using `randy@randroid.dev`. Reuse that record. The package identity
+is independent of the Seller Office ID. No earlier Samsung release was present.
 
 This is a packaged Tizen Web application (`.wgt`), the Samsung-supported route used
 for this edition. It is not a C++ or C# rewrite, a remotely hosted website, or an
@@ -16,6 +17,20 @@ Do not select older model groups or claim certification before testing them.
 The UI fits 720p, 1080p and 4K CSS viewports; GPU rendering is capped at 1080p.
 
 ## Build and sign
+
+The official SDK is installed at `/Users/randroid/tizen-sdk`, with data at
+`/Users/randroid/tizen-sdk-data.1`. The current CLI reports `10.3.9`; TV resources
+`10.0.0` and Samsung Certificate Extension `2.0.75` are installed. Fresh login
+shells resolve both `tz` and `tizen` through the SDK path configuration. The official
+`tizen build-web` command passes on `dist-samsung/`. An optional IDE component's
+Finder-shortcut script timed out; that does not negate the successful CLI build.
+No IDE launch or emulator verification is claimed.
+
+Samsung issued the author certificate for `RandroidSamsungTV` using the intended
+work account. Its encrypted certificate and password records are backed up locally
+outside this repository. Keep this author identity for updates. It expires on
+November 7, 2027. The distributor certificate and complete signing profile still
+require the target TV's DUID; `sdb devices` currently reports no connected TV.
 
 Run `npm ci`, then `npm run build:samsung`. The production files are in
 `dist-samsung/`. The build writes a content hash manifest and
@@ -89,12 +104,13 @@ Record the exact model, firmware, Tizen version, package hash and results.
 
 ## Seller Office submission
 
-1. Sign in at <https://seller.samsungapps.com/tv/> with the intended publisher's
-   Samsung account. Check seller/group identity and existing applications before
-   creating a new record. Public sellers are limited to U.S. distribution; partner
-   distribution requires the account's applicable approvals.
-2. Create or select Joker's Run, Tizen Web application, English default language.
-   Read back the immutable Seller Office app ID and publisher/group.
+1. Reuse the verified Randroid LLC business group and work Samsung account at
+   <https://seller.samsungapps.com/tv/>. The Public Group is limited to U.S.
+   distribution; further territories require Samsung Partner Group approval.
+2. Reuse Joker's Run (`3202611050850`), Tizen Web application, English default
+   language. Its English title/description, Game category, Samsung 12+ self-rating
+   and no-personal-information declaration were saved and reloaded. U.S. service
+   territory was saved. The optional gamepad feature save still needs readback.
 3. Upload the signed package. Resolve validation errors and select only verified
    Tizen 8+ model groups, including the eligible 2026 groups. Read back version,
    package identity and validation result.
@@ -105,17 +121,36 @@ Record the exact model, firmware, Tizen version, package hash and results.
    no blood/gore, no gambling, no chat, no purchases, no ads, no accounts or data
    collection. Do not invent an issued rating certificate. Region-specific rating
    certificates and seller permissions determine available territories.
-6. Download the current Application UI Description template from Samsung and fill
-   it without changing its required structure. The prepared source content is
-   `release/samsung/UI-DESCRIPTION.md`. The public download endpoint returned HTML
-   in the unauthenticated session; no PPTX template or completed PPTX is claimed.
-   Add any test code/checkpoint access using the existing `?debug` tooling through
-   the Web Inspector; Mission 01 is the only playable level.
-7. Register verification information: no test login, no geo-block, no payment or
-   voucher. Confirm distribution/pricing choices in the live account.
+6. Upload `release-artifacts/samsung/JokersRun-UI-Description-1.0.0.pptx`.
+   The completed 14-slide document uses the current [v1.42 template](https://d1oxlq5h9kq8q5.cloudfront.net/tvstore/App_Description_template_eng_v.1.42.zip)
+   linked by the live verification form. Its required sections, masters, layouts,
+   themes and embedded fonts are retained. Seven actual browser-rendered UI
+   screens are included; all slides were reviewed through a LibreOffice PDF
+   render. The file's hash and verification are in `ui-description-receipt.json`.
+   Its attachment/save in Seller Office was interrupted by another Chrome
+   activity and was not verified. Resume in an idle Samsung browser context.
+7. Register verification information: no app login, no geo-block, no in-app
+   purchases or voucher. Mission 01 is the only playable mission. Target the
+   verified Google Play U.S. price of **USD 2.99**. Samsung supports Paid App
+   distribution through its [Checkout DPI portal](https://dpi.samsungcheckout.com/),
+   whose sign-in currently requires the user to add phone-based two-step
+   verification. Do not publish this paid game as free to bypass that gate.
+   The image-use/copyright agreement also awaits action-time user approval
+   before saving the staged icon, background and screenshot uploads.
 8. Request New Release / submit certification, then reload and record the actual
    resulting status and timestamp in `STATUS.json`. Upload, submission, approval
    and public availability are separate milestones.
+
+To regenerate the UI Description after updating captures, download and extract the
+current template, run the TV runtime and complete-mission QA commands, then run:
+
+```sh
+python3 scripts/samsung-ui-description.py /path/to/App_Description_template_eng_v.1.42.pptx
+```
+
+Re-render and inspect the resulting PPTX before uploading. The filler preserves
+Samsung's required sections, removes the guide/example pages, and uses the real
+QA captures. It does not claim that those captures came from a physical TV.
 
 Do not report this app as submitted based on local files, a draft app record,
 successful signing, or screenshots alone.

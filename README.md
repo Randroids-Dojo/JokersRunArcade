@@ -26,6 +26,9 @@ the publisher's Samsung-issued author/distributor profile. Unsigned packages can
 be installed or submitted as a release. Browser checks do not establish Samsung
 hardware compatibility or certification. See [Samsung release instructions](docs/samsung/RELEASE.md)
 and the [submission status](release/samsung/STATUS.json) for the current gates.
+SDK CLI 10.3.9 and the Samsung author certificate are set up. Seller Office draft
+`3202611050850` exists; TV signing/testing, Checkout phone verification and the
+required image-use agreement still prevent submission.
 
 ## Run
 

@@ -2,7 +2,7 @@
   "title": "Joker's Run",
   "version": "1.0.0",
   "publisher": "Randroid LLC",
-  "publisherVerification": "Confirm against the signed-in Samsung seller group before submission.",
+  "publisherVerification": "Randroid LLC business seller group verified live and after reload in Samsung Seller Office.",
   "language": "en-US",
   "categorySuggestion": "Games / Action or Arcade, as offered by the live portal",
   "shortDescription": "Launch from the carrier and stop enemy scouts before they reveal your fleet.",
@@ -25,15 +25,32 @@
     "bloodOrGore": false,
     "gambling": false,
     "userGeneratedContentOrChat": false,
-    "issuedAgeRating": null
+    "issuedAgeRating": null,
+    "samsungSelfRating": "12+ (saved; pending Samsung review)"
   },
-  "pricing": "Not configured; confirm live store options and retain any existing authorized price.",
-  "territories": "Not selected; limited by seller approval and regional age-rating requirements.",
+  "pricing": "Target USD 2.99, matching Google Play U.S. Samsung Checkout supports Paid App; configuration awaits user-completed phone/two-step verification.",
+  "territories": "United States of America saved; Public Group is limited to U.S. distribution.",
   "assets": {
     "foreground": "assets/logo-1920x1080.png",
     "background": "assets/background-1920x1080.jpg",
     "legacyIcon": "assets/icon-512x423.png",
     "squareIcon": "assets/icon-square-1024.png",
-    "screenshots": ["assets/01-title.jpg", "assets/02-scout-intercept.jpg", "assets/03-ace-dogfight.jpg", "assets/04-final-intercept.jpg"]
-  }
+    "screenshots": [
+      "assets/01-title.jpg",
+      "assets/02-scout-intercept.jpg",
+      "assets/03-ace-dogfight.jpg",
+      "assets/04-final-intercept.jpg"
+    ],
+    "detailBackground": "assets/background-1920x1080.jpg"
+  },
+  "googlePlayReference": {
+    "url": "https://play.google.com/store/apps/details?id=app.toyboxes.jokersrun&hl=en_US&gl=US",
+    "publisher": "Toyboxes",
+    "usPrice": "USD 2.99",
+    "rating": "Everyone 10+",
+    "contentDescriptor": "Mild Violence",
+    "verifiedAt": "2026-11-07T23:10:39.866Z"
+  },
+  "brand": "Toyboxes",
+  "sellerOfficeAppId": "3202611050850"
 }

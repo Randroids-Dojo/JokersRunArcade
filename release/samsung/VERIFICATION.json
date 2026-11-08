@@ -53,8 +53,8 @@
         "data": {
           "assist": true,
           "turn": 1,
-          "bank": 1.2102258364458391,
-          "heading": 0.38004006991260847
+          "bank": 1.2102647103482702,
+          "heading": 0.37995242774332566
         }
       },
       {
@@ -93,7 +93,7 @@
           "pos": [
             -300,
             900,
-            -2129
+            -2117
           ],
           "speed": 235,
           "target": "SCOUT-1",
@@ -126,7 +126,7 @@
           "combo": 0,
           "hp": 100,
           "pos": [
-            16236,
+            16237,
             600,
             -1142
           ],
@@ -157,11 +157,11 @@
           "combo": 0,
           "hp": 100,
           "pos": [
-            15293,
+            15290,
             1100,
-            -2911
+            -2899
           ],
-          "speed": 247,
+          "speed": 248,
           "target": "LAST SCOUT",
           "locked": false,
           "aircraft": [
@@ -260,7 +260,27 @@
     "installable": false,
     "uploadReady": false,
     "sha256": "dc4cd453d67660a99203a66e3058642ccf319b72e883501cc0b3a1a47a3883c4",
-    "blocker": "Samsung-issued author and distributor certificates are required."
+    "blocker": "Samsung author certificate is issued; distributor certificate, TV DUID and complete signing profile are still required."
   },
-  "contentFileCount": 54
+  "contentFileCount": 54,
+  "sdkBuild": {
+    "passed": true,
+    "cliVersion": "10.3.9",
+    "result": "BUILD SUCCESSFUL",
+    "physicalDeviceValidation": false
+  },
+  "uiDescription": {
+    "artifact": "/Users/randroid/Documents/Dev/JokersRunArcade/release-artifacts/samsung/JokersRun-UI-Description-1.0.0.pptx",
+    "sha256": "317328be74b8e2b3b702453826c1867edfcc10ad977e9e669a284aa3261f5f49",
+    "bytes": 4268114,
+    "visibleSlides": 14,
+    "templateVersion": "1.42",
+    "templateUrl": "https://d1oxlq5h9kq8q5.cloudfront.net/tvstore/App_Description_template_eng_v.1.42.zip",
+    "allXmlAndZipIntegrityPassed": true,
+    "mastersLayoutsThemesEmbeddedFontsBytePreserved": 39,
+    "requiredSectionsPresent": true,
+    "realScreenshotPanels": 7,
+    "visualReview": "All 14 slides inspected through LibreOffice PDF render/contact sheet; detailed key-policy and language pages checked. No observed clipping or image mismatches.",
+    "screenshotProvenance": "Desktop-browser renders of packaged TV build, not physical TV evidence."
+  }
 }

@@ -1,8 +1,10 @@
 # Application UI Description content
 
-This is source content for Samsung's mandatory presentation template. It is not
-the required completed PPTX. Preserve all template sections and structure when
-transferring this content into the authenticated download.
+This is source content for Samsung's mandatory presentation template. The completed
+14-slide v1.42 PPTX is at `release-artifacts/samsung/JokersRun-UI-Description-1.0.0.pptx`.
+All required sections are filled and seven real UI captures are included. The file
+was rendered and visually checked; its Seller Office attachment/save is unverified.
+Regenerate with `scripts/samsung-ui-description.py` and the official downloaded template.
 
 Application: Joker's Run. Content provider: Randroid LLC. Application version:
 1.0.0. Description version: 1.0. Date: November 7, 2026. Author: Randroid LLC.
@@ -40,8 +42,9 @@ Background/power/Home → suspended mission; foreground → Paused until Resume.
 ## Menus and functions
 
 Use `assets/01-title.jpg` for Title and actual runtime screenshots under
-`release-artifacts/samsung/` for Paused, Failed and Debrief. Capture Privacy and
-Exit confirmation from the final signed device build when assembling the template.
+`release-artifacts/samsung/` for Paused, Failed and Debrief. The completed document includes Privacy and Exit confirmation from the packaged
+browser build. Replace them with final signed-device captures after physical QA
+if required by Samsung; no existing capture is presented as device evidence.
 Label the screenshot elements and provide the following corresponding functions.
 
 | Screen | Elements and functions |
@@ -83,6 +86,6 @@ for gameplay validation. These are existing development hooks, not player menus.
 
 The prepared marketing captures are actual desktop-browser renders of the
 packaged TV build with no invulnerability or bot, using checkpoint selection.
-They are not presented as physical TV evidence. Physical TV playtest, final
-certificate identity and Seller Office submission remain unverified until the
+They are not presented as physical TV evidence. The Samsung author certificate is issued and backed up. The distributor certificate,
+physical TV playtest and Seller Office submission remain unverified until the
 release status records their actual results.
