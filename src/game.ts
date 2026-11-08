@@ -17,6 +17,7 @@ import { Score } from './score';
 import { Terrain } from './terrain';
 import { TouchControls } from './touch';
 import { MissileSpec, Weapons, Bullet, Missile } from './weapons';
+import { IS_TV } from './platform';
 
 export type GameState = 'title' | 'play' | 'paused' | 'failed' | 'clear' | 'debrief';
 export type WingOrder = 'cover' | 'scouts' | 'split';
@@ -133,7 +134,8 @@ export class Game {
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-    this.dprMax = Math.min(window.devicePixelRatio, coarse ? 1.5 : 1.75);
+    // Render the TV world at at most 1080p; keep the interface at the TV's CSS resolution.
+    this.dprMax = IS_TV ? Math.min(1, 1920 / window.innerWidth, 1080 / window.innerHeight) : Math.min(window.devicePixelRatio, coarse ? 1.5 : 1.75);
     this.dpr = this.dprMax;
     this.renderer.setPixelRatio(this.dpr);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -170,6 +172,11 @@ export class Game {
   resize() {
     const w = window.innerWidth;
     const h = window.innerHeight;
+    if (IS_TV) {
+      const quality = this.dpr / this.dprMax;
+      this.dprMax = Math.min(1, 1920 / w, 1080 / h);
+      this.dpr = this.dprMax * quality;
+    }
     this.renderer.setPixelRatio(this.dpr);
     this.renderer.setSize(w, h, false);
     this.rig.camera.aspect = w / h;
@@ -529,11 +536,11 @@ export class Game {
     if (inp.taps.length && this.state === 'play' && this.controlsEnabled) {
       for (const t of inp.taps) this.pickTargetAt(t.x, t.y);
     }
-    if (this.state === 'title' && inp.confirm) this.startMission();
+    if (!IS_TV && this.state === 'title' && inp.confirm) this.startMission();
     else if (this.state === 'play' && inp.pause) this.pause();
     else if (this.state === 'paused' && inp.pause) this.resume();
-    else if (this.state === 'failed' && this.failTimer < 0 && inp.confirm) this.retry();
-    else if (this.state === 'debrief' && inp.confirm) this.restart();
+    else if (!IS_TV && this.state === 'failed' && this.failTimer < 0 && inp.confirm) this.retry();
+    else if (!IS_TV && this.state === 'debrief' && inp.confirm) this.restart();
 
     const live = this.state === 'play' || this.state === 'clear' || this.state === 'failed';
     if (this.slowT > 0) {
@@ -1124,8 +1131,9 @@ export class Game {
     const fps = (1000 * this.perfN) / this.perfAcc;
     this.perfAcc = 0;
     this.perfN = 0;
-    if (fps < 48 && this.dpr > 0.7) {
-      this.dpr = Math.max(0.7, this.dpr * 0.85);
+    const minimum = Math.min(0.7, this.dprMax * 0.7);
+    if (fps < 48 && this.dpr > minimum) {
+      this.dpr = Math.max(minimum, this.dpr * 0.85);
       this.perfHoldUntil = now + 20000;
       this.perfGood = 0;
       this.resize();

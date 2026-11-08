@@ -1,0 +1,56 @@
+{
+  "title": "Joker's Run",
+  "version": "1.0.0",
+  "publisher": "Randroid LLC",
+  "publisherVerification": "Randroid LLC business seller group verified live and after reload in Samsung Seller Office.",
+  "language": "en-US",
+  "categorySuggestion": "Games / Action or Arcade, as offered by the live portal",
+  "shortDescription": "Launch from the carrier and stop enemy scouts before they reveal your fleet.",
+  "description": "Take the cockpit in Mission 01 of Joker's Run, an arcade flight combat game for Samsung Smart TV. Launch from a carrier, learn your maneuvers, intercept enemy recon aircraft, fight their escorts, chase a scout through coastal cliffs, and challenge an enemy ace before the final transmission.\n\nPlay with your Samsung Smart Remote using assisted steering, or connect a standard gamepad for direct flight controls. Pause to change flight commands, adjust sound and invert pitch, or restart from a checkpoint. Recorded squadron radio and captions guide the mission. Your best score and settings stay on your TV.\n\nThe complete Mission 01 is included and works offline. Breakout is a next-mission teaser and is not a second playable mission. No accounts, ads, in-app purchases, subscriptions, or analytics.",
+  "releaseNotes": "First Samsung Smart TV edition. Includes Mission 01, Smart Remote and gamepad controls, offline audio and privacy policy, local best scores, checkpoint retries, and TV pause/exit support.",
+  "supportEmail": "support@toyboxes.app",
+  "website": "https://toyboxes.app",
+  "privacyUrlCandidate": "https://jokers-run-arcade.vercel.app/privacy.html",
+  "privacyUrlStatus": "Source policy updated for Samsung TV; deploy and verify before submission.",
+  "targetModels": "Tizen 8.0+ / verified 2024-2026 Samsung TV model groups",
+  "networkRequired": false,
+  "loginRequired": false,
+  "testAccounts": "Not applicable; no login or paid content.",
+  "geoBlocked": false,
+  "ads": false,
+  "inAppPurchases": false,
+  "personalDataCollectedOrShared": false,
+  "content": {
+    "aircraftCombatAndExplosions": true,
+    "bloodOrGore": false,
+    "gambling": false,
+    "userGeneratedContentOrChat": false,
+    "issuedAgeRating": null,
+    "samsungSelfRating": "12+ (saved; pending Samsung review)"
+  },
+  "pricing": "Target USD 2.99, matching Google Play U.S. Samsung Checkout supports Paid App; configuration awaits user-completed phone/two-step verification.",
+  "territories": "United States of America saved; Public Group is limited to U.S. distribution.",
+  "assets": {
+    "foreground": "assets/logo-1920x1080.png",
+    "background": "assets/background-1920x1080.jpg",
+    "legacyIcon": "assets/icon-512x423.png",
+    "squareIcon": "assets/icon-square-1024.png",
+    "screenshots": [
+      "assets/01-title.jpg",
+      "assets/02-scout-intercept.jpg",
+      "assets/03-ace-dogfight.jpg",
+      "assets/04-final-intercept.jpg"
+    ],
+    "detailBackground": "assets/background-1920x1080.jpg"
+  },
+  "googlePlayReference": {
+    "url": "https://play.google.com/store/apps/details?id=app.toyboxes.jokersrun&hl=en_US&gl=US",
+    "publisher": "Toyboxes",
+    "usPrice": "USD 2.99",
+    "rating": "Everyone 10+",
+    "contentDescriptor": "Mild Violence",
+    "verifiedAt": "2026-11-07T23:10:39.866Z"
+  },
+  "brand": "Toyboxes",
+  "sellerOfficeAppId": "3202611050850"
+}

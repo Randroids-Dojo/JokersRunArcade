@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://toyboxes.app/jokers-run/tv" version="1.0.0" viewmodes="maximized">
+  <tizen:application id="JkRunTv001.JokersRun" package="JkRunTv001" required_version="8.0"/>
+  <name>Joker's Run</name>
+  <content src="index.html"/>
+  <icon src="icon.png"/>
+  <description>Offline arcade flight combat for Samsung Smart TV.</description>
+  <author email="support@toyboxes.app" href="https://toyboxes.app">Randroid LLC</author>
+  <tizen:profile name="tv-samsung"/>
+  <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+  <tizen:metadata key="http://samsung.com/tv/metadata/devel.api.version" value="8.0"/>
+  <tizen:metadata key="http://samsung.com/tv/metadata/use.network" value="false"/>
+  <tizen:metadata key="http://samsung.com/tv/metadata/prelaunch.support" value="false"/>
+  <tizen:content-security-policy>default-src 'self'; script-src 'self' $WEBAPIS; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self' blob:; connect-src 'self'; frame-src 'self'; object-src 'none'</tizen:content-security-policy>
+  <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable" pointing-device-support="disable"/>
+</widget>

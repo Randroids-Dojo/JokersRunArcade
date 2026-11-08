@@ -6,6 +6,30 @@ Three.js + TypeScript + Vite. All models, terrain, ocean, sky, effects, music, a
 
 **[Play it](https://jokers-run-arcade.vercel.app)**
 
+## Samsung Smart TV
+
+The dedicated TV edition targets Tizen 8.0+ (2024–2026 Samsung TVs), including the
+2026 Tizen 10 generation. It bundles the game, fonts, audio and privacy policy for
+offline play, with five-way Smart Remote controls, spatial menu focus, gamepads,
+background suspension, Smart Hub exit and a 1080p render budget on 4K screens.
+
+```sh
+npm ci
+npm run build:samsung           # dist-samsung/ and an explicitly unsigned WGT
+npm run test:samsung            # packaged local-file input/lifecycle/layout checks
+npm run test:samsung:mission    # complete automated mission, no invulnerability
+SAMSUNG_CERT_PROFILE=YourSamsungProfile npm run package:samsung
+```
+
+`TIZEN_CLI` can specify the absolute path to the installed Tizen CLI. Signing needs
+the publisher's Samsung-issued author/distributor profile. Unsigned packages cannot
+be installed or submitted as a release. Browser checks do not establish Samsung
+hardware compatibility or certification. See [Samsung release instructions](docs/samsung/RELEASE.md)
+and the [submission status](release/samsung/STATUS.json) for the current gates.
+SDK CLI 10.3.9 and the Samsung author certificate are set up. Seller Office draft
+`3202611050850` exists; TV signing/testing, Checkout phone verification and the
+required image-use agreement still prevent submission.
+
 ## Run
 
 ```sh

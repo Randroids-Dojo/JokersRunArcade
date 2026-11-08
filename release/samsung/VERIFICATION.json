@@ -1,0 +1,286 @@
+{
+  "runtime": {
+    "environment": "macOS arm64; installed Chrome 156.0.8078.80; actual packaged local files; Samsung 2026 user-agent; synthetic platform APIs, remote codes and gamepad",
+    "physicalSamsungTVVerified": false,
+    "checks": [
+      {
+        "name": "packaged local-file boot, TV mode, launch focus, local fonts and no touch controls",
+        "data": true
+      },
+      {
+        "name": "title controls fit 1920x1080",
+        "data": {
+          "w": 1920,
+          "h": 1080
+        }
+      },
+      {
+        "name": "title controls fit 1280x720",
+        "data": {
+          "w": 1280,
+          "h": 720
+        }
+      },
+      {
+        "name": "title controls fit 3840x2160",
+        "data": {
+          "w": 1920,
+          "h": 1080
+        }
+      },
+      {
+        "name": "OK toggles the focused setting without starting the mission or losing focus",
+        "data": true
+      },
+      {
+        "name": "five-way remote moves menu focus",
+        "data": true
+      },
+      {
+        "name": "offline TV privacy copy scrolls with remote and Return restores focus",
+        "data": true
+      },
+      {
+        "name": "remote starts with audio, Return pauses, focus lands on Resume, simulation freezes",
+        "data": true
+      },
+      {
+        "name": "Return resumes without losing the mission",
+        "data": true
+      },
+      {
+        "name": "numeric Samsung arrow codes steer the real aircraft with assisted banking",
+        "data": {
+          "assist": true,
+          "turn": 1,
+          "bank": 1.2102647103482702,
+          "heading": 0.37995242774332566
+        }
+      },
+      {
+        "name": "double-tap remote direction triggers an actual barrel roll",
+        "data": true
+      },
+      {
+        "name": "holding OK fires guns and pausing releases held weapons",
+        "data": true
+      },
+      {
+        "name": "flight-menu boost and brake latch, exclude each other, and toggle off",
+        "data": true
+      },
+      {
+        "name": "flight-menu wingman and target commands reach the simulation",
+        "data": true
+      },
+      {
+        "name": "visibility contract suspends audio, simulation and controls; foreground waits for Resume",
+        "data": true
+      },
+      {
+        "name": "gamepad Start, D-pad, A, and disconnect pause work through standard Gamepad API",
+        "data": true
+      },
+      {
+        "name": "genuine TV layout screenshot: scouts",
+        "data": {
+          "state": "play",
+          "phase": "PHASE 3 \u00b7 STOP THE SCOUTS",
+          "checkpoint": "scouts",
+          "score": 0,
+          "combo": 0,
+          "hp": 100,
+          "pos": [
+            -300,
+            900,
+            -2117
+          ],
+          "speed": 235,
+          "target": "SCOUT-1",
+          "locked": false,
+          "aircraft": [
+            "player:JOKER 1",
+            "wingman:JOKER 2",
+            "wingman:JOKER 3",
+            "wingman:JOKER 4",
+            "scout:SCOUT-1",
+            "scout:SCOUT-2",
+            "scout:SCOUT-3",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "fighter:BANDIT"
+          ],
+          "fps": 60
+        }
+      },
+      {
+        "name": "genuine TV layout screenshot: ace",
+        "data": {
+          "state": "play",
+          "phase": "PHASE 7 \u00b7 ACE",
+          "checkpoint": "ace",
+          "score": 0,
+          "combo": 0,
+          "hp": 100,
+          "pos": [
+            16237,
+            600,
+            -1142
+          ],
+          "speed": 235,
+          "target": "ACE",
+          "locked": false,
+          "aircraft": [
+            "player:JOKER 1",
+            "wingman:JOKER 2",
+            "wingman:JOKER 3",
+            "wingman:JOKER 4",
+            "scout:SCOUT-2(frozen)(hidden)",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "fighter:BANDIT",
+            "ace:ACE"
+          ],
+          "fps": 60
+        }
+      },
+      {
+        "name": "genuine TV layout screenshot: final",
+        "data": {
+          "state": "play",
+          "phase": "PHASE 8 \u00b7 FINAL SCOUT",
+          "checkpoint": "final",
+          "score": 0,
+          "combo": 0,
+          "hp": 100,
+          "pos": [
+            15290,
+            1100,
+            -2899
+          ],
+          "speed": 248,
+          "target": "LAST SCOUT",
+          "locked": false,
+          "aircraft": [
+            "player:JOKER 1",
+            "wingman:JOKER 2",
+            "wingman:JOKER 3",
+            "wingman:JOKER 4",
+            "scout:LAST SCOUT",
+            "ace:ACE"
+          ],
+          "fps": 60
+        }
+      },
+      {
+        "name": "failure screen receives focus when its delayed reveal completes; OK retries the current checkpoint",
+        "data": true
+      },
+      {
+        "name": "Samsung Exit key exits immediately through the platform API",
+        "data": true
+      },
+      {
+        "name": "Return on title offers exit confirmation; Return cancels it",
+        "data": true
+      },
+      {
+        "name": "local settings persist; a fresh launch safely returns to title",
+        "data": true
+      },
+      {
+        "name": "Samsung wordmark, background, legacy icon and four 1080p JPEG screenshots meet byte limits",
+        "data": true
+      },
+      {
+        "name": "no network dependency, missing local resources, console errors or page errors",
+        "data": {
+          "keys": [
+            "MediaPlayPause",
+            "MediaPause",
+            "MediaPlay",
+            "ColorF0Red",
+            "ColorF1Green",
+            "ColorF2Yellow",
+            "ColorF3Blue"
+          ],
+          "screensaver": [],
+          "exits": 0
+        }
+      }
+    ],
+    "errors": [],
+    "external": []
+  },
+  "mission": {
+    "environment": "macOS arm64, Chrome 156.0.8078.80, actual Samsung local bundle, automated direct-control pilot at 2x simulation speed",
+    "physicalSamsungTVVerified": false,
+    "humanRemotePlaytest": false,
+    "completed": true,
+    "finalState": {
+      "state": "debrief",
+      "phase": "PHASE 8 \u00b7 FINAL SCOUT",
+      "checkpoint": "final",
+      "score": 68980,
+      "combo": 1,
+      "hp": 100,
+      "pos": [
+        13506,
+        914,
+        -773
+      ],
+      "speed": 230,
+      "target": null,
+      "locked": false,
+      "aircraft": [
+        "player:JOKER 1",
+        "wingman:JOKER 2",
+        "wingman:JOKER 3",
+        "wingman:JOKER 4"
+      ],
+      "fps": 30,
+      "god": false,
+      "shots": 302,
+      "missiles": 52
+    },
+    "errors": [],
+    "eventCount": 90
+  },
+  "webRegression": {
+    "productionBuild": "passed",
+    "touchChecksPassed": 28,
+    "touchChecksTotal": 28
+  },
+  "package": {
+    "path": "/Users/randroid/Documents/Dev/JokersRunArcade/release-artifacts/samsung/JokersRun-1.0.0.unsigned.wgt",
+    "signed": false,
+    "installable": false,
+    "uploadReady": false,
+    "sha256": "dc4cd453d67660a99203a66e3058642ccf319b72e883501cc0b3a1a47a3883c4",
+    "blocker": "Samsung author certificate is issued; distributor certificate, TV DUID and complete signing profile are still required."
+  },
+  "contentFileCount": 54,
+  "sdkBuild": {
+    "passed": true,
+    "cliVersion": "10.3.9",
+    "result": "BUILD SUCCESSFUL",
+    "physicalDeviceValidation": false
+  },
+  "uiDescription": {
+    "artifact": "/Users/randroid/Documents/Dev/JokersRunArcade/release-artifacts/samsung/JokersRun-UI-Description-1.0.0.pptx",
+    "sha256": "317328be74b8e2b3b702453826c1867edfcc10ad977e9e669a284aa3261f5f49",
+    "bytes": 4268114,
+    "visibleSlides": 14,
+    "templateVersion": "1.42",
+    "templateUrl": "https://d1oxlq5h9kq8q5.cloudfront.net/tvstore/App_Description_template_eng_v.1.42.zip",
+    "allXmlAndZipIntegrityPassed": true,
+    "mastersLayoutsThemesEmbeddedFontsBytePreserved": 39,
+    "requiredSectionsPresent": true,
+    "realScreenshotPanels": 7,
+    "visualReview": "All 14 slides inspected through LibreOffice PDF render/contact sheet; detailed key-policy and language pages checked. No observed clipping or image mismatches.",
+    "screenshotProvenance": "Desktop-browser renders of packaged TV build, not physical TV evidence."
+  }
+}
